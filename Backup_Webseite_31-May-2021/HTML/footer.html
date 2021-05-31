@@ -1,0 +1,45 @@
+<div class="footer_layer">
+<div class="footer_group">
+     <!----Footer----->
+
+
+   <div class="footer_group_entry">
+      <div id="footer_right">
+          <?php 
+if ($_SESSION['lang'] == "ch") {
+include "sprachen/schweizerdeutsch.php";
+} 
+if ($_SESSION['lang'] == "de") {
+include "sprachen/deutsch.php";
+}
+if ($_SESSION['lang'] == "en") {
+include "sprachen/englisch.php";
+}
+if ($_SESSION['lang'] == "fr") {
+include "sprachen/franzoesisch.php";
+}
+if ($_SESSION['lang'] == "it") {
+include "sprachen/italienisch.php";
+}
+if ($_SESSION['lang'] == "rae") {
+include "sprachen/raetoromanisch.php";
+}
+    ?>
+      <h2 align="left" id="kontakt" style="color:white"> <?php echo $h2_kontakt; ?> </h2>
+      <p>Email: <u><a href="mailto:proletariatschweiz@gmail.com">proletariatschweiz@gmail.com</a></u> </p>
+         <p>Facebook: <u><a href="https://www.facebook.com/proletariat.schweizer">proletariat.schweizer</a></u></p>
+         <p>Instagram: <u><a href="https://instagram.com/proletariat.ch">proletariat.ch</a></u></p>
+         <p>Twitter: <u><a href="https://twitter.com/proletariat_ch">proletariat_ch</a></u></p>
+         <p>YouTube: <u><a href="https://www.youtube.com/channel/UCiIssAwHJ33D9xT07Fmsg3w/">proletariat schweiz</a></u></p>
+
+   </div>
+   <br> 
+   <br>
+   <br> 
+   <br>
+   <div class="madeby"><u><a  href="https://jasonbanyer.ch">Made by J.Banyer 2021</a></u></div>
+   </div>
+
+
+</div>
+</div>

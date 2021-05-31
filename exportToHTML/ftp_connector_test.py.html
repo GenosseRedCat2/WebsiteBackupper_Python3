@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>ftp_connector_test.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ftp_connector_test.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">ftplib</span>
+<span class="s0">import </span><span class="s1">os</span>
+
+
+<span class="s2">#Datum hinzufügen</span>
+<span class="s2">#schauen ob die modify timestamp geändert hat</span>
+<span class="s0">def </span><span class="s1">downloaddir():</span>
+    <span class="s1">files = ftp_conn.mlsd(</span><span class="s3">&quot;&quot;</span><span class="s1">)</span>
+
+    <span class="s0">for </span><span class="s1">file </span><span class="s0">in </span><span class="s1">files:</span>
+        <span class="s0">if </span><span class="s1">file[</span><span class="s4">1</span><span class="s1">][</span><span class="s3">&quot;type&quot;</span><span class="s1">] == </span><span class="s3">&quot;dir&quot;</span><span class="s1">:</span>
+            <span class="s1">print(file)</span>
+            <span class="s1">ftp_conn.cwd(file[</span><span class="s4">0</span><span class="s1">])</span>
+            <span class="s0">if not </span><span class="s1">os.path.isdir(file[</span><span class="s4">0</span><span class="s1">]):</span>
+                <span class="s1">os.mkdir(file[</span><span class="s4">0</span><span class="s1">])</span>
+            <span class="s1">os.chdir(file[</span><span class="s4">0</span><span class="s1">])</span>
+            <span class="s1">downloaddir()</span>
+            <span class="s1">ftp_conn.cwd(</span><span class="s3">&quot;..&quot;</span><span class="s1">)</span>
+            <span class="s1">os.chdir(</span><span class="s3">&quot;..&quot;</span><span class="s1">)</span>
+        <span class="s0">if </span><span class="s1">file[</span><span class="s4">1</span><span class="s1">][</span><span class="s3">&quot;type&quot;</span><span class="s1">] == </span><span class="s3">&quot;file&quot;</span><span class="s1">:</span>
+            <span class="s0">with </span><span class="s1">open(file[</span><span class="s4">0</span><span class="s1">]</span><span class="s0">,</span><span class="s3">&quot;wb&quot;</span><span class="s1">) </span><span class="s0">as </span><span class="s1">file_2:</span>
+                <span class="s1">ftp_conn.retrbinary(</span><span class="s3">'RETR ' </span><span class="s1">+ file[</span><span class="s4">0</span><span class="s1">]</span><span class="s0">, </span><span class="s1">file_2.write)</span>
+
+
+<span class="s1">username = </span><span class="s3">'schule_www91'</span><span class="s1">;</span>
+<span class="s1">password = </span><span class="s3">'SchulePASSWORTFUERFTP2222'</span><span class="s1">;</span>
+
+<span class="s1">ftp_conn = ftplib.FTP(</span><span class="s3">'tangoclub.ch'</span><span class="s1">);</span>
+<span class="s2">#ftp_conn = ftputil.FTP('tangoclub.ch')</span>
+<span class="s1">print(</span><span class="s3">'using %s : %s' </span><span class="s1">% (username</span><span class="s0">, </span><span class="s1">password));</span>
+<span class="s1">ftp_conn.login(username</span><span class="s0">, </span><span class="s1">password);</span>
+<span class="s1">print(</span><span class="s3">&quot;Success: %s:%s&quot; </span><span class="s1">% (username</span><span class="s0">, </span><span class="s1">password));</span>
+<span class="s1">os.chdir(</span><span class="s3">&quot;backup&quot;</span><span class="s1">)</span>
+<span class="s1">files = []</span>
+<span class="s1">ftp_conn.cwd(</span><span class="s3">'SCHOOL_JASON/PS/GridCSS'</span><span class="s1">)</span>
+
+<span class="s1">downloaddir()</span>
+<span class="s2"># Close the Connection</span>
+<span class="s1">ftp_conn.quit()</span></pre>
+</body>
+</html>

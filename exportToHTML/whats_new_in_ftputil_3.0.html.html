@@ -1,0 +1,562 @@
+<html>
+<head>
+<title>whats_new_in_ftputil_3.0.html</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #e8bf6a;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #bababa;}
+.s3 { color: #a5c261;}
+.s4 { color: #6d9cbe;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+whats_new_in_ftputil_3.0.html</font>
+</center></td></tr></table>
+<pre><span class="s0">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="s0">&lt;!DOCTYPE </span><span class="s2">html </span><span class="s0">PUBLIC </span><span class="s3">&quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;html </span><span class="s2">xmlns</span><span class="s3">=&quot;http://www.w3.org/1999/xhtml&quot; </span><span class="s2">xml:lang</span><span class="s3">=&quot;en&quot; </span><span class="s2">lang</span><span class="s3">=&quot;en&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;head&gt;</span>
+<span class="s0">&lt;meta </span><span class="s2">http-equiv</span><span class="s3">=&quot;Content-Type&quot; </span><span class="s2">content</span><span class="s3">=&quot;text/html; charset=utf-8&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;meta </span><span class="s2">name</span><span class="s3">=&quot;generator&quot; </span><span class="s2">content</span><span class="s3">=&quot;Docutils 0.16: http://docutils.sourceforge.net/&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;title&gt;</span><span class="s1">What's new in ftputil 3.0?</span><span class="s0">&lt;/title&gt;</span>
+<span class="s0">&lt;meta </span><span class="s2">name</span><span class="s3">=&quot;date&quot; </span><span class="s2">content</span><span class="s3">=&quot;2013-09-29&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;meta </span><span class="s2">name</span><span class="s3">=&quot;author&quot; </span><span class="s2">content</span><span class="s3">=&quot;Stefan Schwarzer </span><span class="s4">&amp;lt;</span><span class="s3">sschwarzer</span><span class="s4">&amp;#64;</span><span class="s3">sschwarzer.net</span><span class="s4">&amp;gt;</span><span class="s3">&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;style </span><span class="s2">type</span><span class="s3">=&quot;text/css&quot;</span><span class="s0">&gt;</span>
+
+<span class="s1">/*</span>
+<span class="s1">:Author: David Goodger</span>
+<span class="s1">:Contact: goodger@users.sourceforge.net</span>
+<span class="s1">:Date: $Date: 2005-05-26 12:51:39 +0200 (Thu, 26 May 2005) $</span>
+<span class="s1">:Version: $Revision: 3368 $</span>
+<span class="s1">:Copyright: This stylesheet has been placed in the public domain.</span>
+
+<span class="s1">Default cascading style sheet for the HTML output of Docutils.</span>
+<span class="s1">*/</span>
+
+<span class="s1">/* &quot;! important&quot; is used here to override other ``margin-top`` and</span>
+   <span class="s1">``margin-bottom`` styles that are later in the stylesheet or </span>
+   <span class="s1">more specific.  See http://www.w3.org/TR/CSS1#the-cascade */</span>
+<span class="s1">.first {</span>
+  <span class="s1">margin-top: 0 ! important }</span>
+
+<span class="s1">.last, .with-subtitle {</span>
+  <span class="s1">margin-bottom: 0 ! important }</span>
+
+<span class="s1">.hidden {</span>
+  <span class="s1">display: none }</span>
+
+<span class="s1">a.toc-backref {</span>
+  <span class="s1">text-decoration: none ;</span>
+  <span class="s1">color: black }</span>
+
+<span class="s1">blockquote.epigraph {</span>
+  <span class="s1">margin: 2em 5em ; }</span>
+
+<span class="s1">dl.docutils dd {</span>
+  <span class="s1">margin-bottom: 0.5em }</span>
+
+<span class="s1">/* Uncomment (and remove this text!) to get bold-faced definition list terms</span>
+<span class="s1">dl.docutils dt {</span>
+  <span class="s1">font-weight: bold }</span>
+<span class="s1">*/</span>
+
+<span class="s1">div.abstract {</span>
+  <span class="s1">margin: 2em 5em }</span>
+
+<span class="s1">div.abstract p.topic-title {</span>
+  <span class="s1">font-weight: bold ;</span>
+  <span class="s1">text-align: center }</span>
+
+<span class="s1">div.admonition, div.attention, div.caution, div.danger, div.error,</span>
+<span class="s1">div.hint, div.important, div.note, div.tip, div.warning {</span>
+  <span class="s1">margin: 2em ;</span>
+  <span class="s1">border: medium outset ;</span>
+  <span class="s1">padding: 1em }</span>
+
+<span class="s1">div.admonition p.admonition-title, div.hint p.admonition-title,</span>
+<span class="s1">div.important p.admonition-title, div.note p.admonition-title,</span>
+<span class="s1">div.tip p.admonition-title {</span>
+  <span class="s1">font-weight: bold ;</span>
+  <span class="s1">font-family: sans-serif }</span>
+
+<span class="s1">div.attention p.admonition-title, div.caution p.admonition-title,</span>
+<span class="s1">div.danger p.admonition-title, div.error p.admonition-title,</span>
+<span class="s1">div.warning p.admonition-title {</span>
+  <span class="s1">color: red ;</span>
+  <span class="s1">font-weight: bold ;</span>
+  <span class="s1">font-family: sans-serif }</span>
+
+<span class="s1">/* Uncomment (and remove this text!) to get reduced vertical space in</span>
+   <span class="s1">compound paragraphs.</span>
+<span class="s1">div.compound .compound-first, div.compound .compound-middle {</span>
+  <span class="s1">margin-bottom: 0.5em }</span>
+
+<span class="s1">div.compound .compound-last, div.compound .compound-middle {</span>
+  <span class="s1">margin-top: 0.5em }</span>
+<span class="s1">*/</span>
+
+<span class="s1">div.dedication {</span>
+  <span class="s1">margin: 2em 5em ;</span>
+  <span class="s1">text-align: center ;</span>
+  <span class="s1">font-style: italic }</span>
+
+<span class="s1">div.dedication p.topic-title {</span>
+  <span class="s1">font-weight: bold ;</span>
+  <span class="s1">font-style: normal }</span>
+
+<span class="s1">div.figure {</span>
+  <span class="s1">margin-left: 2em }</span>
+
+<span class="s1">div.footer, div.header {</span>
+  <span class="s1">font-size: smaller }</span>
+
+<span class="s1">div.line-block {</span>
+  <span class="s1">display: block ;</span>
+  <span class="s1">margin-top: 1em ;</span>
+  <span class="s1">margin-bottom: 1em }</span>
+
+<span class="s1">div.line-block div.line-block {</span>
+  <span class="s1">margin-top: 0 ;</span>
+  <span class="s1">margin-bottom: 0 ;</span>
+  <span class="s1">margin-left: 1.5em }</span>
+
+<span class="s1">div.sidebar {</span>
+  <span class="s1">margin-left: 1em ;</span>
+  <span class="s1">border: medium outset ;</span>
+  <span class="s1">padding: 1em ;</span>
+  <span class="s1">background-color: #ffffee ;</span>
+  <span class="s1">width: 40% ;</span>
+  <span class="s1">float: right ;</span>
+  <span class="s1">clear: right }</span>
+
+<span class="s1">div.sidebar p.rubric {</span>
+  <span class="s1">font-family: sans-serif ;</span>
+  <span class="s1">font-size: medium }</span>
+
+<span class="s1">div.system-messages {</span>
+  <span class="s1">margin: 5em }</span>
+
+<span class="s1">div.system-messages h1 {</span>
+  <span class="s1">color: red }</span>
+
+<span class="s1">div.system-message {</span>
+  <span class="s1">border: medium outset ;</span>
+  <span class="s1">padding: 1em }</span>
+
+<span class="s1">div.system-message p.system-message-title {</span>
+  <span class="s1">color: red ;</span>
+  <span class="s1">font-weight: bold }</span>
+
+<span class="s1">div.topic {</span>
+  <span class="s1">margin: 2em }</span>
+
+<span class="s1">h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,</span>
+<span class="s1">h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {</span>
+  <span class="s1">margin-top: 0.4em }</span>
+
+<span class="s1">h1.title {</span>
+  <span class="s1">text-align: center }</span>
+
+<span class="s1">h2.subtitle {</span>
+  <span class="s1">text-align: center }</span>
+
+<span class="s1">hr.docutils {</span>
+  <span class="s1">width: 75% }</span>
+
+<span class="s1">ol.simple, ul.simple {</span>
+  <span class="s1">margin-bottom: 1em }</span>
+
+<span class="s1">ol.arabic {</span>
+  <span class="s1">list-style: decimal }</span>
+
+<span class="s1">ol.loweralpha {</span>
+  <span class="s1">list-style: lower-alpha }</span>
+
+<span class="s1">ol.upperalpha {</span>
+  <span class="s1">list-style: upper-alpha }</span>
+
+<span class="s1">ol.lowerroman {</span>
+  <span class="s1">list-style: lower-roman }</span>
+
+<span class="s1">ol.upperroman {</span>
+  <span class="s1">list-style: upper-roman }</span>
+
+<span class="s1">p.attribution {</span>
+  <span class="s1">text-align: right ;</span>
+  <span class="s1">margin-left: 50% }</span>
+
+<span class="s1">p.caption {</span>
+  <span class="s1">font-style: italic }</span>
+
+<span class="s1">p.credits {</span>
+  <span class="s1">font-style: italic ;</span>
+  <span class="s1">font-size: smaller }</span>
+
+<span class="s1">p.label {</span>
+  <span class="s1">white-space: nowrap }</span>
+
+<span class="s1">p.rubric {</span>
+  <span class="s1">font-weight: bold ;</span>
+  <span class="s1">font-size: larger ;</span>
+  <span class="s1">color: maroon ;</span>
+  <span class="s1">text-align: center }</span>
+
+<span class="s1">p.sidebar-title {</span>
+  <span class="s1">font-family: sans-serif ;</span>
+  <span class="s1">font-weight: bold ;</span>
+  <span class="s1">font-size: larger }</span>
+
+<span class="s1">p.sidebar-subtitle {</span>
+  <span class="s1">font-family: sans-serif ;</span>
+  <span class="s1">font-weight: bold }</span>
+
+<span class="s1">p.topic-title {</span>
+  <span class="s1">font-weight: bold }</span>
+
+<span class="s1">pre.address {</span>
+  <span class="s1">margin-bottom: 0 ;</span>
+  <span class="s1">margin-top: 0 ;</span>
+  <span class="s1">font-family: serif ;</span>
+  <span class="s1">font-size: 100% }</span>
+
+<span class="s1">pre.line-block {</span>
+  <span class="s1">font-family: serif ;</span>
+  <span class="s1">font-size: 100% }</span>
+
+<span class="s1">pre.literal-block, pre.doctest-block {</span>
+  <span class="s1">margin-left: 2em ;</span>
+  <span class="s1">margin-right: 2em ;</span>
+  <span class="s1">background-color: #eeeeee }</span>
+
+<span class="s1">span.classifier {</span>
+  <span class="s1">font-family: sans-serif ;</span>
+  <span class="s1">font-style: oblique }</span>
+
+<span class="s1">span.classifier-delimiter {</span>
+  <span class="s1">font-family: sans-serif ;</span>
+  <span class="s1">font-weight: bold }</span>
+
+<span class="s1">span.interpreted {</span>
+  <span class="s1">font-family: sans-serif }</span>
+
+<span class="s1">span.option {</span>
+  <span class="s1">white-space: nowrap }</span>
+
+<span class="s1">span.pre {</span>
+  <span class="s1">white-space: pre }</span>
+
+<span class="s1">span.problematic {</span>
+  <span class="s1">color: red }</span>
+
+<span class="s1">span.section-subtitle {</span>
+  <span class="s1">/* font-size relative to parent (&lt;h#&gt; element) */</span>
+  <span class="s1">font-size: 80% }</span>
+
+<span class="s1">table.citation {</span>
+  <span class="s1">border-left: solid thin gray }</span>
+
+<span class="s1">table.docinfo {</span>
+  <span class="s1">margin: 2em 4em }</span>
+
+<span class="s1">table.docutils {</span>
+  <span class="s1">margin-top: 0.5em ;</span>
+  <span class="s1">margin-bottom: 0.5em }</span>
+
+<span class="s1">table.footnote {</span>
+  <span class="s1">border-left: solid thin black }</span>
+
+<span class="s1">table.docutils td, table.docutils th,</span>
+<span class="s1">table.docinfo td, table.docinfo th {</span>
+  <span class="s1">padding-left: 0.5em ;</span>
+  <span class="s1">padding-right: 0.5em ;</span>
+  <span class="s1">vertical-align: top }</span>
+
+<span class="s1">table.docutils th.field-name, table.docinfo th.docinfo-name {</span>
+  <span class="s1">font-weight: bold ;</span>
+  <span class="s1">text-align: left ;</span>
+  <span class="s1">white-space: nowrap ;</span>
+  <span class="s1">padding-left: 0 }</span>
+
+<span class="s1">h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,</span>
+<span class="s1">h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {</span>
+  <span class="s1">font-size: 100% }</span>
+
+<span class="s1">tt.docutils {</span>
+  <span class="s1">background-color: #eeeeee }</span>
+
+<span class="s1">ul.auto-toc {</span>
+  <span class="s1">list-style-type: none }</span>
+
+<span class="s0">&lt;/style&gt;</span>
+<span class="s0">&lt;/head&gt;</span>
+<span class="s0">&lt;body&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;document&quot; </span><span class="s2">id</span><span class="s3">=&quot;what-s-new-in-ftputil-3-0&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1 </span><span class="s2">class</span><span class="s3">=&quot;title&quot;</span><span class="s0">&gt;</span><span class="s1">What's new in ftputil 3.0?</span><span class="s0">&lt;/h1&gt;</span>
+<span class="s0">&lt;table </span><span class="s2">class</span><span class="s3">=&quot;docinfo&quot; </span><span class="s2">frame</span><span class="s3">=&quot;void&quot; </span><span class="s2">rules</span><span class="s3">=&quot;none&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;col </span><span class="s2">class</span><span class="s3">=&quot;docinfo-name&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;col </span><span class="s2">class</span><span class="s3">=&quot;docinfo-content&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;tbody </span><span class="s2">valign</span><span class="s3">=&quot;top&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;tr&gt;&lt;th </span><span class="s2">class</span><span class="s3">=&quot;docinfo-name&quot;</span><span class="s0">&gt;</span><span class="s1">Version:</span><span class="s0">&lt;/th&gt;</span>
+<span class="s0">&lt;td&gt;</span><span class="s1">3.0</span><span class="s0">&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s0">&lt;tr&gt;&lt;th </span><span class="s2">class</span><span class="s3">=&quot;docinfo-name&quot;</span><span class="s0">&gt;</span><span class="s1">Date:</span><span class="s0">&lt;/th&gt;</span>
+<span class="s0">&lt;td&gt;</span><span class="s1">2013-09-29</span><span class="s0">&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s0">&lt;tr&gt;&lt;th </span><span class="s2">class</span><span class="s3">=&quot;docinfo-name&quot;</span><span class="s0">&gt;</span><span class="s1">Author:</span><span class="s0">&lt;/th&gt;</span>
+<span class="s0">&lt;td&gt;</span><span class="s1">Stefan Schwarzer </span><span class="s4">&amp;lt;</span><span class="s0">&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference external&quot; </span><span class="s2">href</span><span class="s3">=&quot;mailto:sschwarzer</span><span class="s4">&amp;#64;</span><span class="s3">sschwarzer.net&quot;</span><span class="s0">&gt;</span><span class="s1">sschwarzer</span><span class="s4">&amp;#64;</span><span class="s1">sschwarzer.net</span><span class="s0">&lt;/a&gt;</span><span class="s4">&amp;gt;</span><span class="s0">&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s0">&lt;/tbody&gt;</span>
+<span class="s0">&lt;/table&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;contents topic&quot; </span><span class="s2">id</span><span class="s3">=&quot;contents&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;p </span><span class="s2">class</span><span class="s3">=&quot;topic-title&quot;</span><span class="s0">&gt;</span><span class="s1">Contents</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;ul </span><span class="s2">class</span><span class="s3">=&quot;simple&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#added-support-for-python-3&quot; </span><span class="s2">id</span><span class="s3">=&quot;id1&quot;</span><span class="s0">&gt;</span><span class="s1">Added support for Python 3</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#dropped-support-for-python-2-4-and-2-5&quot; </span><span class="s2">id</span><span class="s3">=&quot;id2&quot;</span><span class="s0">&gt;</span><span class="s1">Dropped support for Python 2.4 and 2.5</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#newlines-and-encoding-of-remote-file-content&quot; </span><span class="s2">id</span><span class="s3">=&quot;id3&quot;</span><span class="s0">&gt;</span><span class="s1">Newlines and encoding of remote file content</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#module-and-method-name-changes&quot; </span><span class="s2">id</span><span class="s3">=&quot;id4&quot;</span><span class="s0">&gt;</span><span class="s1">Module and method name changes</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#upload-and-download-modes&quot; </span><span class="s2">id</span><span class="s3">=&quot;id5&quot;</span><span class="s0">&gt;</span><span class="s1">Upload and download modes</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#custom-parsers-receive-lines-as-unicode-strings&quot; </span><span class="s2">id</span><span class="s3">=&quot;id6&quot;</span><span class="s0">&gt;</span><span class="s1">Custom parsers receive lines as unicode strings</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#porting-to-ftputil-3-0&quot; </span><span class="s2">id</span><span class="s3">=&quot;id7&quot;</span><span class="s0">&gt;</span><span class="s1">Porting to ftputil 3.0</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#questions-and-answers&quot; </span><span class="s2">id</span><span class="s3">=&quot;id8&quot;</span><span class="s0">&gt;</span><span class="s1">Questions and answers</span><span class="s0">&lt;/a&gt;&lt;ul&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#the-advice-to-adapt-code-to-the-new-string-types-is-rather-vague-can-t-you-be-more-specific&quot; </span><span class="s2">id</span><span class="s3">=&quot;id9&quot;</span><span class="s0">&gt;</span><span class="s1">The advice to </span><span class="s4">&amp;quot;</span><span class="s1">adapt code to the new string types</span><span class="s4">&amp;quot; </span><span class="s1">is rather vague. Can't you be more specific?</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#why-don-t-you-use-a-python-2-api-for-python-2-and-a-python-3-api-for-python-3&quot; </span><span class="s2">id</span><span class="s3">=&quot;id10&quot;</span><span class="s0">&gt;</span><span class="s1">Why don't you use a </span><span class="s4">&amp;quot;</span><span class="s1">Python 2 API</span><span class="s4">&amp;quot; </span><span class="s1">for Python 2 and a </span><span class="s4">&amp;quot;</span><span class="s1">Python 3 API</span><span class="s4">&amp;quot; </span><span class="s1">for Python 3?</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#why-don-t-you-use-the-six-module-to-be-able-to-support-python-2-4-and-2-5&quot; </span><span class="s2">id</span><span class="s3">=&quot;id11&quot;</span><span class="s0">&gt;</span><span class="s1">Why don't you use the six module to be able to support Python 2.4 and 2.5?</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference internal&quot; </span><span class="s2">href</span><span class="s3">=&quot;#why-don-t-you-use-2to3-to-generate-the-python-3-version-of-ftputil&quot; </span><span class="s2">id</span><span class="s3">=&quot;id12&quot;</span><span class="s0">&gt;</span><span class="s1">Why don't you use 2to3 to generate the Python 3 version of ftputil?</span><span class="s0">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="s0">&lt;/ul&gt;</span>
+<span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;/ul&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;added-support-for-python-3&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id1&quot;</span><span class="s0">&gt;</span><span class="s1">Added support for Python 3</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">This ftputil release adds support for Python 3.0 and up.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Python 2 and 3 are supported with the same source code. Also, the API</span>
+<span class="s1">including the semantics is the same. As for Python 3 code, in ftputil</span>
+<span class="s1">3.0 unicode is somewhat preferred over byte strings. On the other</span>
+<span class="s1">hand, in line with the file system APIs of both Python 2 and 3,</span>
+<span class="s1">methods take either byte strings or unicode strings. Methods that take</span>
+<span class="s1">and return strings (for example, </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.path.abspath</span><span class="s0">&lt;/tt&gt; </span><span class="s1">or</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.listdir</span><span class="s0">&lt;/tt&gt;</span><span class="s1">), return the same string type they get.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;admonition note&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;p </span><span class="s2">class</span><span class="s3">=&quot;first admonition-title&quot;</span><span class="s0">&gt;</span><span class="s1">Note</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Both Python 2 and 3 have two </span><span class="s4">&amp;quot;</span><span class="s1">string</span><span class="s4">&amp;quot; </span><span class="s1">types where one type represents a</span>
+<span class="s1">sequence of bytes and the other type character (text) data.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;table </span><span class="s2">border</span><span class="s3">=&quot;1&quot; </span><span class="s2">class</span><span class="s3">=&quot;docutils&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;colgroup&gt;</span>
+<span class="s0">&lt;col </span><span class="s2">width</span><span class="s3">=&quot;22%&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;col </span><span class="s2">width</span><span class="s3">=&quot;17%&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;col </span><span class="s2">width</span><span class="s3">=&quot;17%&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;col </span><span class="s2">width</span><span class="s3">=&quot;43%&quot; </span><span class="s0">/&gt;</span>
+<span class="s0">&lt;/colgroup&gt;</span>
+<span class="s0">&lt;thead </span><span class="s2">valign</span><span class="s3">=&quot;bottom&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;tr&gt;&lt;th </span><span class="s2">class</span><span class="s3">=&quot;head&quot;</span><span class="s0">&gt;</span><span class="s1">Python version</span><span class="s0">&lt;/th&gt;</span>
+<span class="s0">&lt;th </span><span class="s2">class</span><span class="s3">=&quot;head&quot;</span><span class="s0">&gt;</span><span class="s1">Binary type</span><span class="s0">&lt;/th&gt;</span>
+<span class="s0">&lt;th </span><span class="s2">class</span><span class="s3">=&quot;head&quot;</span><span class="s0">&gt;</span><span class="s1">Text type</span><span class="s0">&lt;/th&gt;</span>
+<span class="s0">&lt;th </span><span class="s2">class</span><span class="s3">=&quot;head&quot;</span><span class="s0">&gt;</span><span class="s1">Default string literal type</span><span class="s0">&lt;/th&gt;</span>
+<span class="s0">&lt;/tr&gt;</span>
+<span class="s0">&lt;/thead&gt;</span>
+<span class="s0">&lt;tbody </span><span class="s2">valign</span><span class="s3">=&quot;top&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;tr&gt;&lt;td&gt;</span><span class="s1">2</span><span class="s0">&lt;/td&gt;</span>
+<span class="s0">&lt;td&gt;&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt;&lt;/td&gt;</span>
+<span class="s0">&lt;td&gt;&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">unicode</span><span class="s0">&lt;/tt&gt;&lt;/td&gt;</span>
+<span class="s0">&lt;td&gt;&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt; </span><span class="s1">(= binary type)</span><span class="s0">&lt;/td&gt;</span>
+<span class="s0">&lt;/tr&gt;</span>
+<span class="s0">&lt;tr&gt;&lt;td&gt;</span><span class="s1">3</span><span class="s0">&lt;/td&gt;</span>
+<span class="s0">&lt;td&gt;&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">bytes</span><span class="s0">&lt;/tt&gt;&lt;/td&gt;</span>
+<span class="s0">&lt;td&gt;&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt;&lt;/td&gt;</span>
+<span class="s0">&lt;td&gt;&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt; </span><span class="s1">(= text type)</span><span class="s0">&lt;/td&gt;</span>
+<span class="s0">&lt;/tr&gt;</span>
+<span class="s0">&lt;/tbody&gt;</span>
+<span class="s0">&lt;/table&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">So both lines of Python have an </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt; </span><span class="s1">type, but in Python 2 it's</span>
+<span class="s1">the byte type and in Python 3 the text type. The </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt; </span><span class="s1">type is</span>
+<span class="s1">also what you get when you write a literal string without any</span>
+<span class="s1">prefixes. For example </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s4">&amp;quot;</span><span class="s1">Python</span><span class="s4">&amp;quot;</span><span class="s0">&lt;/tt&gt; </span><span class="s1">is a binary string in Python 2</span>
+<span class="s1">and a text (unicode) string in Python 3.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p </span><span class="s2">class</span><span class="s3">=&quot;last&quot;</span><span class="s0">&gt;</span><span class="s1">If this seems confusing, please read </span><span class="s0">&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference external&quot; </span><span class="s2">href</span><span class="s3">=&quot;http://docs.python.org/3.0/whatsnew/3.0.html#text-vs-data-instead-of-unicode-vs-8-bit&quot;</span><span class="s0">&gt;</span><span class="s1">this description</span><span class="s0">&lt;/a&gt; </span><span class="s1">in the Python</span>
+<span class="s1">documentation for more details.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;dropped-support-for-python-2-4-and-2-5&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id2&quot;</span><span class="s0">&gt;</span><span class="s1">Dropped support for Python 2.4 and 2.5</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">To make it easier to use the same code for Python 2 and 3, I decided</span>
+<span class="s1">to use the Python 3 features backported to Python 2.6. As a</span>
+<span class="s1">consequence, ftputil 3.0 doesn't work with Python 2.4 and 2.5.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;newlines-and-encoding-of-remote-file-content&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id3&quot;</span><span class="s0">&gt;</span><span class="s1">Newlines and encoding of remote file content</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Traditionally, </span><span class="s4">&amp;quot;</span><span class="s1">text mode</span><span class="s4">&amp;quot; </span><span class="s1">for FTP transfers meant translation to</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">\r\n</span><span class="s0">&lt;/tt&gt; </span><span class="s1">newlines, even between transfers of Unix clients and Unix</span>
+<span class="s1">servers. Since this presumably most of the time is neither the expected</span>
+<span class="s1">nor the desired behavior, the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.open</span><span class="s0">&lt;/tt&gt; </span><span class="s1">method now has the API</span>
+<span class="s1">and semantics of the built-in </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">open</span><span class="s0">&lt;/tt&gt; </span><span class="s1">function in Python 3. If you</span>
+<span class="s1">want the same API for </span><span class="s0">&lt;em&gt;</span><span class="s1">local</span><span class="s0">&lt;/em&gt; </span><span class="s1">files in Python 2.6 and 2.7, you can use</span>
+<span class="s1">the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">open</span><span class="s0">&lt;/tt&gt; </span><span class="s1">function from the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">io</span><span class="s0">&lt;/tt&gt; </span><span class="s1">module.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Thus, when opening remote files in </span><span class="s0">&lt;em&gt;</span><span class="s1">binary</span><span class="s0">&lt;/em&gt; </span><span class="s1">mode, the new API does</span>
+<span class="s0">&lt;em&gt;</span><span class="s1">not</span><span class="s0">&lt;/em&gt; </span><span class="s1">accept an encoding argument. On the other hand, opening a file</span>
+<span class="s1">in text mode always implies an encoding step when writing and decoding</span>
+<span class="s1">step when reading files. If the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">encoding</span><span class="s0">&lt;/tt&gt; </span><span class="s1">argument isn't specified,</span>
+<span class="s1">it defaults to the value of </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">locale.getpreferredencoding(False)</span><span class="s0">&lt;/tt&gt;</span><span class="s1">.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Also as with Python 3's </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">open</span><span class="s0">&lt;/tt&gt; </span><span class="s1">builtin, opening a file in binary</span>
+<span class="s1">mode for reading will give you byte string data. If you write to a</span>
+<span class="s1">file opened in binary mode, you must write byte strings. Along the</span>
+<span class="s1">same lines, files opened in text mode will give you unicode strings</span>
+<span class="s1">when read, and require unicode strings to be passed to write</span>
+<span class="s1">operations.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;module-and-method-name-changes&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id4&quot;</span><span class="s0">&gt;</span><span class="s1">Module and method name changes</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">In earlier ftputil versions, most module names had a redundant</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">ftp_</span><span class="s0">&lt;/tt&gt; </span><span class="s1">prefix. In ftputil 3.0, these prefixes are removed. Of the</span>
+<span class="s1">module names that are part of the public ftputil API, this affects</span>
+<span class="s1">only </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">ftputil.error</span><span class="s0">&lt;/tt&gt; </span><span class="s1">and </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">ftputil.stat</span><span class="s0">&lt;/tt&gt;</span><span class="s1">.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">In Python 2.2, </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">file</span><span class="s0">&lt;/tt&gt; </span><span class="s1">became an alias for </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">open</span><span class="s0">&lt;/tt&gt;</span><span class="s1">, and previous</span>
+<span class="s1">ftputil versions also had an </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.file</span><span class="s0">&lt;/tt&gt; </span><span class="s1">besides the</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.open</span><span class="s0">&lt;/tt&gt; </span><span class="s1">method. In Python 3.0, the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">file</span><span class="s0">&lt;/tt&gt; </span><span class="s1">builtin was</span>
+<span class="s1">removed and the return values from the built-in </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">open</span><span class="s0">&lt;/tt&gt; </span><span class="s1">methods</span>
+<span class="s1">are no longer </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">file</span><span class="s0">&lt;/tt&gt; </span><span class="s1">instances. Along the same lines, ftputil 3.0</span>
+<span class="s1">also drops the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.file</span><span class="s0">&lt;/tt&gt; </span><span class="s1">alias and requires </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.open</span><span class="s0">&lt;/tt&gt;</span><span class="s1">.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;upload-and-download-modes&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id5&quot;</span><span class="s0">&gt;</span><span class="s1">Upload and download modes</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">The </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost</span><span class="s0">&lt;/tt&gt; </span><span class="s1">methods for downloading and uploading files</span>
+<span class="s1">(</span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">download</span><span class="s0">&lt;/tt&gt;</span><span class="s1">, </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">download_if_newer</span><span class="s0">&lt;/tt&gt;</span><span class="s1">, </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">upload</span><span class="s0">&lt;/tt&gt; </span><span class="s1">and</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">upload_if_newer</span><span class="s0">&lt;/tt&gt;</span><span class="s1">) now always use binary mode; a </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">mode</span><span class="s0">&lt;/tt&gt; </span><span class="s1">argument</span>
+<span class="s1">is no longer needed or even allowed. Although this behavior makes</span>
+<span class="s1">downloads and uploads slightly less flexible, it should cover almost</span>
+<span class="s1">all use cases.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">If you </span><span class="s0">&lt;em&gt;</span><span class="s1">really</span><span class="s0">&lt;/em&gt; </span><span class="s1">want to do a transfer involving files opened in text</span>
+<span class="s1">mode, you can still do:</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;pre </span><span class="s2">class</span><span class="s3">=&quot;literal-block&quot;</span><span class="s0">&gt;</span>
+<span class="s1">import ftputil.file_transfer</span>
+
+<span class="s1">...</span>
+
+<span class="s1">with FTPHost.open(</span><span class="s4">&amp;quot;</span><span class="s1">source.txt</span><span class="s4">&amp;quot;</span><span class="s1">, </span><span class="s4">&amp;quot;</span><span class="s1">r</span><span class="s4">&amp;quot;</span><span class="s1">, encoding=</span><span class="s4">&amp;quot;</span><span class="s1">UTF-8</span><span class="s4">&amp;quot;</span><span class="s1">) as source, \</span>
+     <span class="s1">FTPHost.open(</span><span class="s4">&amp;quot;</span><span class="s1">target.txt</span><span class="s4">&amp;quot;</span><span class="s1">, </span><span class="s4">&amp;quot;</span><span class="s1">w</span><span class="s4">&amp;quot;</span><span class="s1">, encoding=</span><span class="s4">&amp;quot;</span><span class="s1">latin1</span><span class="s4">&amp;quot;</span><span class="s1">) as target:</span>
+    <span class="s1">ftputil.file_transfer.copyfileobj(source, target)</span>
+<span class="s0">&lt;/pre&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Note that it's not possible anymore to open one file in binary</span>
+<span class="s1">mode and the other file in text mode and transfer data between</span>
+<span class="s1">them with </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">copyfileobj</span><span class="s0">&lt;/tt&gt;</span><span class="s1">. For example, opening the source in</span>
+<span class="s1">binary mode will read byte strings, but a target file opened in</span>
+<span class="s1">text mode will only allow writing of unicode strings. Then again,</span>
+<span class="s1">I assume that the cases where you want a mixed binary/text mode</span>
+<span class="s1">transfer should be </span><span class="s0">&lt;em&gt;</span><span class="s1">very</span><span class="s0">&lt;/em&gt; </span><span class="s1">rare.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;custom-parsers-receive-lines-as-unicode-strings&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id6&quot;</span><span class="s0">&gt;</span><span class="s1">Custom parsers receive lines as unicode strings</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Custom parsers, as described in the </span><span class="s0">&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference external&quot; </span><span class="s2">href</span><span class="s3">=&quot;http://ftputil.sschwarzer.net/documentation#writing-directory-parsers&quot;</span><span class="s0">&gt;</span><span class="s1">documentation</span><span class="s0">&lt;/a&gt;</span><span class="s1">, receive a text</span>
+<span class="s1">line for each directory entry in the methods </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">ignores_line</span><span class="s0">&lt;/tt&gt; </span><span class="s1">and</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">parse_line</span><span class="s0">&lt;/tt&gt;</span><span class="s1">. In previous ftputil versions, the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">line</span><span class="s0">&lt;/tt&gt; </span><span class="s1">arguments</span>
+<span class="s1">were byte strings; now they're unicode strings.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">If you aren't sure what this is about, this may help: If you never</span>
+<span class="s1">used the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost.set_parser</span><span class="s0">&lt;/tt&gt; </span><span class="s1">method, you can ignore this section.</span>
+<span class="s1">:-)</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;porting-to-ftputil-3-0&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id7&quot;</span><span class="s0">&gt;</span><span class="s1">Porting to ftputil 3.0</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;ul </span><span class="s2">class</span><span class="s3">=&quot;simple&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">It's likely that you catch an ftputil exception here and there.</span>
+<span class="s1">In that case, you need to change </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">import ftputil.ftp_error</span><span class="s0">&lt;/tt&gt;</span>
+<span class="s1">to </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">import ftputil.error</span><span class="s0">&lt;/tt&gt; </span><span class="s1">and modify the uses of the module</span>
+<span class="s1">accordingly. If you used </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">from ftputil import ftp_error</span><span class="s0">&lt;/tt&gt;</span><span class="s1">, you can</span>
+<span class="s1">change this to </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">from ftputil import error as ftp_error</span><span class="s0">&lt;/tt&gt; </span><span class="s1">without</span>
+<span class="s1">changing the code using the module.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">If you use the download or upload methods, you need to remove</span>
+<span class="s1">the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">mode</span><span class="s0">&lt;/tt&gt; </span><span class="s1">argument from the call. If you used something</span>
+<span class="s1">else than </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s4">&amp;quot;</span><span class="s1">b</span><span class="s4">&amp;quot;</span><span class="s0">&lt;/tt&gt; </span><span class="s1">for binary mode (which I assume to be unlikely),</span>
+<span class="s1">you'll need to adapt the code that calls the download or upload</span>
+<span class="s1">methods.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">If you use custom parsers, you'll need to change </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">import</span>
+<span class="s1">ftputil.ftp_stat</span><span class="s0">&lt;/tt&gt; </span><span class="s1">to </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">import ftputil.stat</span><span class="s0">&lt;/tt&gt; </span><span class="s1">and adapt your code in</span>
+<span class="s1">the module. Moreover, you might need to change your </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">ignores_line</span><span class="s0">&lt;/tt&gt;</span>
+<span class="s1">or </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">parse_line</span><span class="s0">&lt;/tt&gt; </span><span class="s1">calls if they rely on their </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">line</span><span class="s0">&lt;/tt&gt; </span><span class="s1">argument</span>
+<span class="s1">being a byte string.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">If you use remote files, especially ones opened in text mode, you</span>
+<span class="s1">may need to change your code to adapt to the changes in newline</span>
+<span class="s1">conversion, encoding and/or string type (see above sections).</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;/ul&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;admonition note&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;p </span><span class="s2">class</span><span class="s3">=&quot;first admonition-title&quot;</span><span class="s0">&gt;</span><span class="s1">Note</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">In the root directory of the installed ftputil package is a script</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">find_invalid_code.py</span><span class="s0">&lt;/tt&gt; </span><span class="s1">which, given a start directory as</span>
+<span class="s1">argument, will scan that directory tree for code that may need to</span>
+<span class="s1">be fixed. However, this script uses very simple heuristics, so it</span>
+<span class="s1">may miss some problematic code or list perfectly valid code.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p </span><span class="s2">class</span><span class="s3">=&quot;last&quot;</span><span class="s0">&gt;</span><span class="s1">In particular, you may want to change the regular expression</span>
+<span class="s1">string </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">HOST_REGEX</span><span class="s0">&lt;/tt&gt; </span><span class="s1">for the names you usually use for</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">FTPHost</span><span class="s0">&lt;/tt&gt; </span><span class="s1">objects.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;questions-and-answers&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h1&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id8&quot;</span><span class="s0">&gt;</span><span class="s1">Questions and answers</span><span class="s0">&lt;/a&gt;&lt;/h1&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;the-advice-to-adapt-code-to-the-new-string-types-is-rather-vague-can-t-you-be-more-specific&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h2&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id9&quot;</span><span class="s0">&gt;</span><span class="s1">The advice to </span><span class="s4">&amp;quot;</span><span class="s1">adapt code to the new string types</span><span class="s4">&amp;quot; </span><span class="s1">is rather vague. Can't you be more specific?</span><span class="s0">&lt;/a&gt;&lt;/h2&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">It's difficult to be more specific without knowing your application.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">That said, best practices nowadays are:</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;ul </span><span class="s2">class</span><span class="s3">=&quot;simple&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">If you're dealing with character data, use unicode strings whenever</span>
+<span class="s1">possible. In Python 2, this means the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">unicode</span><span class="s0">&lt;/tt&gt; </span><span class="s1">type and in Python</span>
+<span class="s1">3 the </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt; </span><span class="s1">type.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">Whenever you deal with binary data which is actually character data,</span>
+<span class="s1">decode it as </span><span class="s0">&lt;em&gt;</span><span class="s1">soon</span><span class="s0">&lt;/em&gt; </span><span class="s1">as possible when </span><span class="s0">&lt;em&gt;</span><span class="s1">reading</span><span class="s0">&lt;/em&gt; </span><span class="s1">data. Encode the data</span>
+<span class="s1">as </span><span class="s0">&lt;em&gt;</span><span class="s1">late</span><span class="s0">&lt;/em&gt; </span><span class="s1">as possible when </span><span class="s0">&lt;em&gt;</span><span class="s1">writing</span><span class="s0">&lt;/em&gt; </span><span class="s1">data.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;/ul&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Yes, I know that's not much more specific.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;why-don-t-you-use-a-python-2-api-for-python-2-and-a-python-3-api-for-python-3&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h2&gt;&lt;a </span><span class="s2">class</span><span class="s3">=&quot;toc-backref&quot; </span><span class="s2">href</span><span class="s3">=&quot;#id10&quot;</span><span class="s0">&gt;</span><span class="s1">Why don't you use a </span><span class="s4">&amp;quot;</span><span class="s1">Python 2 API</span><span class="s4">&amp;quot; </span><span class="s1">for Python 2 and a </span><span class="s4">&amp;quot;</span><span class="s1">Python 3 API</span><span class="s4">&amp;quot; </span><span class="s1">for Python 3?</span><span class="s0">&lt;/a&gt;&lt;/h2&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">(What's meant here is, for example, that if you opened a remote file</span>
+<span class="s1">as text, the read data could be of byte string type in Python 2 and of</span>
+<span class="s1">unicode type in Python 3. Similarly, under Python 2 a text file opened</span>
+<span class="s1">for writing could accept both byte strings and unicode strings in the</span>
+<span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">write*</span><span class="s0">&lt;/tt&gt; </span><span class="s1">methods.)</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">Actually, I had at first thought of implementing this but dropped the</span>
+<span class="s1">idea because it has several problems:</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;ul </span><span class="s2">class</span><span class="s3">=&quot;simple&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">Basically, I would have to support two APIs for the same set of</span>
+<span class="s1">methods. I can imagine that some things can be simplified by just</span>
+<span class="s1">using </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">str</span><span class="s0">&lt;/tt&gt; </span><span class="s1">to convert to the </span><span class="s4">&amp;quot;</span><span class="s1">right</span><span class="s4">&amp;quot; </span><span class="s1">string type automatically,</span>
+<span class="s1">but I assume these opportunities would be rather the exception than</span>
+<span class="s1">the rule. I'd certainly not look forward to maintaining such code.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">Using two different APIs might require people to change their code</span>
+<span class="s1">if they move from using ftputil 3.x in Python 2 to using it in</span>
+<span class="s1">Python 3.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">Developers who want to support both Python 2 and 3 with the same</span>
+<span class="s1">source code (as I do now in ftputil) would </span><span class="s4">&amp;quot;</span><span class="s1">inherit</span><span class="s4">&amp;quot; </span><span class="s1">the </span><span class="s4">&amp;quot;</span><span class="s1">dual API</span><span class="s4">&amp;quot;</span>
+<span class="s1">and would have to use different wrapper code depending on the Python</span>
+<span class="s1">version their code is run under.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;/ul&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">For these reasons, I </span><span class="s0">&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference external&quot; </span><span class="s2">href</span><span class="s3">=&quot;https://groups.google.com/forum/?fromgroups=#!topic/comp.lang.python/XKof6DpNyH4&quot;</span><span class="s0">&gt;</span><span class="s1">ended up</span><span class="s0">&lt;/a&gt; </span><span class="s1">choosing the same API semantics for</span>
+<span class="s1">Python 2 and 3.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;why-don-t-you-use-the-six-module-to-be-able-to-support-python-2-4-and-2-5&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h2&gt;</span><span class="s1">Why don't you use the </span><span class="s0">&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference external&quot; </span><span class="s2">href</span><span class="s3">=&quot;https://pypi.python.org/pypi/six/&quot;</span><span class="s0">&gt;</span><span class="s1">six</span><span class="s0">&lt;/a&gt; </span><span class="s1">module to be able to support Python 2.4 and 2.5?</span><span class="s0">&lt;/h2&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">There are two reasons:</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;ul </span><span class="s2">class</span><span class="s3">=&quot;simple&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">ftputil so far has no dependencies other than the Python standard</span>
+<span class="s1">library, and I think that's a nice feature.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;li&gt;</span><span class="s1">Although </span><span class="s0">&lt;tt </span><span class="s2">class</span><span class="s3">=&quot;docutils literal&quot;</span><span class="s0">&gt;</span><span class="s1">six</span><span class="s0">&lt;/tt&gt; </span><span class="s1">makes it easier to support Python 2.4/2.5 and</span>
+<span class="s1">Python 3 at the same time, the resulting code is somewhat awkward. I</span>
+<span class="s1">wanted a code base that feels more like </span><span class="s4">&amp;quot;</span><span class="s1">modern Python</span><span class="s4">&amp;quot;</span><span class="s1">; I wanted to</span>
+<span class="s1">use the Python 3 features backported to Python 2.6 and 2.7.</span><span class="s0">&lt;/li&gt;</span>
+<span class="s0">&lt;/ul&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;div </span><span class="s2">class</span><span class="s3">=&quot;section&quot; </span><span class="s2">id</span><span class="s3">=&quot;why-don-t-you-use-2to3-to-generate-the-python-3-version-of-ftputil&quot;</span><span class="s0">&gt;</span>
+<span class="s0">&lt;h2&gt;</span><span class="s1">Why don't you use </span><span class="s0">&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference external&quot; </span><span class="s2">href</span><span class="s3">=&quot;http://docs.python.org/2/library/2to3.html&quot;</span><span class="s0">&gt;</span><span class="s1">2to3</span><span class="s0">&lt;/a&gt; </span><span class="s1">to generate the Python 3 version of ftputil?</span><span class="s0">&lt;/h2&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">I had considered this when I started adapting the ftputil source code</span>
+<span class="s1">for Python 3. On the other hand, although using 2to3 used to be the</span>
+<span class="s1">recommended approach for Python 3 support, even </span><span class="s0">&lt;a </span><span class="s2">class</span><span class="s3">=&quot;reference external&quot; </span><span class="s2">href</span><span class="s3">=&quot;https://docs.djangoproject.com/en/dev/topics/python3/&quot;</span><span class="s0">&gt;</span><span class="s1">rather large</span>
+<span class="s1">projects</span><span class="s0">&lt;/a&gt; </span><span class="s1">have chosen the route of having one code base and using it</span>
+<span class="s1">unmodified for Python 2 and 3.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;p&gt;</span><span class="s1">When I looked into this approach for ftputil 3.0, it became quickly</span>
+<span class="s1">obvious that it would be easier and I found it worked out very well.</span><span class="s0">&lt;/p&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;/div&gt;</span>
+<span class="s0">&lt;/body&gt;</span>
+<span class="s0">&lt;/html&gt;</span>
+</pre>
+</body>
+</html>

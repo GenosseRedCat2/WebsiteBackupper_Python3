@@ -1,0 +1,280 @@
+<html>
+<head>
+<title>whats_new_in_ftputil_3.0.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #a9b7c6;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+whats_new_in_ftputil_3.0.txt</font>
+</center></td></tr></table>
+<pre><span class="s0">What's new in ftputil 3.0?</span>
+<span class="s0">==========================</span>
+
+<span class="s0">:Version:   3.0</span>
+<span class="s0">:Date:      2013-09-29</span>
+<span class="s0">:Author:    Stefan Schwarzer &lt;sschwarzer@sschwarzer.net&gt;</span>
+
+<span class="s0">.. contents::</span>
+
+
+<span class="s0">Added support for Python 3</span>
+<span class="s0">--------------------------</span>
+
+<span class="s0">This ftputil release adds support for Python 3.0 and up.</span>
+
+<span class="s0">Python 2 and 3 are supported with the same source code. Also, the API</span>
+<span class="s0">including the semantics is the same. As for Python 3 code, in ftputil</span>
+<span class="s0">3.0 unicode is somewhat preferred over byte strings. On the other</span>
+<span class="s0">hand, in line with the file system APIs of both Python 2 and 3,</span>
+<span class="s0">methods take either byte strings or unicode strings. Methods that take</span>
+<span class="s0">and return strings (for example, ``FTPHost.path.abspath`` or</span>
+<span class="s0">``FTPHost.listdir``), return the same string type they get.</span>
+
+<span class="s0">.. Note::</span>
+
+    <span class="s0">Both Python 2 and 3 have two &quot;string&quot; types where one type represents a</span>
+    <span class="s0">sequence of bytes and the other type character (text) data.</span>
+
+    <span class="s0">============== =========== =========== ===========================</span>
+    <span class="s0">Python version Binary type Text type   Default string literal type</span>
+    <span class="s0">============== =========== =========== ===========================</span>
+    <span class="s0">2              ``str``     ``unicode`` ``str`` (= binary type)</span>
+    <span class="s0">3              ``bytes``   ``str``     ``str`` (= text type)</span>
+    <span class="s0">============== =========== =========== ===========================</span>
+
+    <span class="s0">So both lines of Python have an ``str`` type, but in Python 2 it's</span>
+    <span class="s0">the byte type and in Python 3 the text type. The ``str`` type is</span>
+    <span class="s0">also what you get when you write a literal string without any</span>
+    <span class="s0">prefixes. For example ``&quot;Python&quot;`` is a binary string in Python 2</span>
+    <span class="s0">and a text (unicode) string in Python 3.</span>
+
+    <span class="s0">If this seems confusing, please read `this description`_ in the Python</span>
+    <span class="s0">documentation for more details.</span>
+
+    <span class="s0">.. _`this description`: http://docs.python.org/3.0/whatsnew/3.0.html#text-vs-data-instead-of-unicode-vs-8-bit</span>
+
+
+<span class="s0">Dropped support for Python 2.4 and 2.5</span>
+<span class="s0">--------------------------------------</span>
+
+<span class="s0">To make it easier to use the same code for Python 2 and 3, I decided</span>
+<span class="s0">to use the Python 3 features backported to Python 2.6. As a</span>
+<span class="s0">consequence, ftputil 3.0 doesn't work with Python 2.4 and 2.5.</span>
+
+
+<span class="s0">Newlines and encoding of remote file content</span>
+<span class="s0">--------------------------------------------</span>
+
+<span class="s0">Traditionally, &quot;text mode&quot; for FTP transfers meant translation to</span>
+<span class="s0">``\r\n`` newlines, even between transfers of Unix clients and Unix</span>
+<span class="s0">servers. Since this presumably most of the time is neither the expected</span>
+<span class="s0">nor the desired behavior, the ``FTPHost.open`` method now has the API</span>
+<span class="s0">and semantics of the built-in ``open`` function in Python 3. If you</span>
+<span class="s0">want the same API for *local* files in Python 2.6 and 2.7, you can use</span>
+<span class="s0">the ``open`` function from the ``io`` module.</span>
+
+<span class="s0">Thus, when opening remote files in *binary* mode, the new API does</span>
+<span class="s0">*not* accept an encoding argument. On the other hand, opening a file</span>
+<span class="s0">in text mode always implies an encoding step when writing and decoding</span>
+<span class="s0">step when reading files. If the ``encoding`` argument isn't specified,</span>
+<span class="s0">it defaults to the value of ``locale.getpreferredencoding(False)``.</span>
+
+<span class="s0">Also as with Python 3's ``open`` builtin, opening a file in binary</span>
+<span class="s0">mode for reading will give you byte string data. If you write to a</span>
+<span class="s0">file opened in binary mode, you must write byte strings. Along the</span>
+<span class="s0">same lines, files opened in text mode will give you unicode strings</span>
+<span class="s0">when read, and require unicode strings to be passed to write</span>
+<span class="s0">operations.</span>
+
+
+<span class="s0">Module and method name changes</span>
+<span class="s0">------------------------------</span>
+
+<span class="s0">In earlier ftputil versions, most module names had a redundant</span>
+<span class="s0">``ftp_`` prefix. In ftputil 3.0, these prefixes are removed. Of the</span>
+<span class="s0">module names that are part of the public ftputil API, this affects</span>
+<span class="s0">only ``ftputil.error`` and ``ftputil.stat``.</span>
+
+<span class="s0">In Python 2.2, ``file`` became an alias for ``open``, and previous</span>
+<span class="s0">ftputil versions also had an ``FTPHost.file`` besides the</span>
+<span class="s0">``FTPHost.open`` method. In Python 3.0, the ``file`` builtin was</span>
+<span class="s0">removed and the return values from the built-in ``open`` methods</span>
+<span class="s0">are no longer ``file`` instances. Along the same lines, ftputil 3.0</span>
+<span class="s0">also drops the ``FTPHost.file`` alias and requires ``FTPHost.open``.</span>
+
+
+<span class="s0">Upload and download modes</span>
+<span class="s0">-------------------------</span>
+
+<span class="s0">The ``FTPHost`` methods for downloading and uploading files</span>
+<span class="s0">(``download``, ``download_if_newer``, ``upload`` and</span>
+<span class="s0">``upload_if_newer``) now always use binary mode; a ``mode`` argument</span>
+<span class="s0">is no longer needed or even allowed. Although this behavior makes</span>
+<span class="s0">downloads and uploads slightly less flexible, it should cover almost</span>
+<span class="s0">all use cases.</span>
+
+<span class="s0">If you *really* want to do a transfer involving files opened in text</span>
+<span class="s0">mode, you can still do::</span>
+
+    <span class="s0">import ftputil.file_transfer</span>
+
+    <span class="s0">...</span>
+
+    <span class="s0">with FTPHost.open(&quot;source.txt&quot;, &quot;r&quot;, encoding=&quot;UTF-8&quot;) as source, \</span>
+         <span class="s0">FTPHost.open(&quot;target.txt&quot;, &quot;w&quot;, encoding=&quot;latin1&quot;) as target:</span>
+        <span class="s0">ftputil.file_transfer.copyfileobj(source, target)</span>
+
+<span class="s0">Note that it's not possible anymore to open one file in binary</span>
+<span class="s0">mode and the other file in text mode and transfer data between</span>
+<span class="s0">them with ``copyfileobj``. For example, opening the source in</span>
+<span class="s0">binary mode will read byte strings, but a target file opened in</span>
+<span class="s0">text mode will only allow writing of unicode strings. Then again,</span>
+<span class="s0">I assume that the cases where you want a mixed binary/text mode</span>
+<span class="s0">transfer should be *very* rare.</span>
+
+
+<span class="s0">Custom parsers receive lines as unicode strings</span>
+<span class="s0">-----------------------------------------------</span>
+
+<span class="s0">Custom parsers, as described in the documentation_, receive a text</span>
+<span class="s0">line for each directory entry in the methods ``ignores_line`` and</span>
+<span class="s0">``parse_line``. In previous ftputil versions, the ``line`` arguments</span>
+<span class="s0">were byte strings; now they're unicode strings.</span>
+
+<span class="s0">.. _documentation: http://ftputil.sschwarzer.net/documentation#writing-directory-parsers</span>
+
+<span class="s0">If you aren't sure what this is about, this may help: If you never</span>
+<span class="s0">used the ``FTPHost.set_parser`` method, you can ignore this section.</span>
+<span class="s0">:-)</span>
+
+
+<span class="s0">Porting to ftputil 3.0</span>
+<span class="s0">----------------------</span>
+
+<span class="s0">- It's likely that you catch an ftputil exception here and there.</span>
+  <span class="s0">In that case, you need to change ``import ftputil.ftp_error``</span>
+  <span class="s0">to ``import ftputil.error`` and modify the uses of the module</span>
+  <span class="s0">accordingly. If you used ``from ftputil import ftp_error``, you can</span>
+  <span class="s0">change this to ``from ftputil import error as ftp_error`` without</span>
+  <span class="s0">changing the code using the module.</span>
+
+<span class="s0">- If you use the download or upload methods, you need to remove</span>
+  <span class="s0">the ``mode`` argument from the call. If you used something</span>
+  <span class="s0">else than ``&quot;b&quot;`` for binary mode (which I assume to be unlikely),</span>
+  <span class="s0">you'll need to adapt the code that calls the download or upload</span>
+  <span class="s0">methods.</span>
+
+<span class="s0">- If you use custom parsers, you'll need to change ``import</span>
+  <span class="s0">ftputil.ftp_stat`` to ``import ftputil.stat`` and adapt your code in</span>
+  <span class="s0">the module. Moreover, you might need to change your ``ignores_line``</span>
+  <span class="s0">or ``parse_line`` calls if they rely on their ``line`` argument</span>
+  <span class="s0">being a byte string.</span>
+
+<span class="s0">- If you use remote files, especially ones opened in text mode, you</span>
+  <span class="s0">may need to change your code to adapt to the changes in newline</span>
+  <span class="s0">conversion, encoding and/or string type (see above sections).</span>
+
+<span class="s0">.. Note::</span>
+
+    <span class="s0">In the root directory of the installed ftputil package is a script</span>
+    <span class="s0">``find_invalid_code.py`` which, given a start directory as</span>
+    <span class="s0">argument, will scan that directory tree for code that may need to</span>
+    <span class="s0">be fixed. However, this script uses very simple heuristics, so it</span>
+    <span class="s0">may miss some problematic code or list perfectly valid code.</span>
+
+    <span class="s0">In particular, you may want to change the regular expression</span>
+    <span class="s0">string ``HOST_REGEX`` for the names you usually use for</span>
+    <span class="s0">``FTPHost`` objects.</span>
+
+
+<span class="s0">Questions and answers</span>
+<span class="s0">---------------------</span>
+
+<span class="s0">The advice to &quot;adapt code to the new string types&quot; is rather vague. Can't you be more specific?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">It's difficult to be more specific without knowing your application.</span>
+
+<span class="s0">That said, best practices nowadays are:</span>
+
+<span class="s0">- If you're dealing with character data, use unicode strings whenever</span>
+  <span class="s0">possible. In Python 2, this means the ``unicode`` type and in Python</span>
+  <span class="s0">3 the ``str`` type.</span>
+
+<span class="s0">- Whenever you deal with binary data which is actually character data,</span>
+  <span class="s0">decode it as *soon* as possible when *reading* data. Encode the data</span>
+  <span class="s0">as *late* as possible when *writing* data.</span>
+
+<span class="s0">Yes, I know that's not much more specific.</span>
+
+
+<span class="s0">Why don't you use a &quot;Python 2 API&quot; for Python 2 and a &quot;Python 3 API&quot; for Python 3?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">(What's meant here is, for example, that if you opened a remote file</span>
+<span class="s0">as text, the read data could be of byte string type in Python 2 and of</span>
+<span class="s0">unicode type in Python 3. Similarly, under Python 2 a text file opened</span>
+<span class="s0">for writing could accept both byte strings and unicode strings in the</span>
+<span class="s0">``write*`` methods.)</span>
+
+<span class="s0">Actually, I had at first thought of implementing this but dropped the</span>
+<span class="s0">idea because it has several problems:</span>
+
+<span class="s0">- Basically, I would have to support two APIs for the same set of</span>
+  <span class="s0">methods. I can imagine that some things can be simplified by just</span>
+  <span class="s0">using ``str`` to convert to the &quot;right&quot; string type automatically,</span>
+  <span class="s0">but I assume these opportunities would be rather the exception than</span>
+  <span class="s0">the rule. I'd certainly not look forward to maintaining such code.</span>
+
+<span class="s0">- Using two different APIs might require people to change their code</span>
+  <span class="s0">if they move from using ftputil 3.x in Python 2 to using it in</span>
+  <span class="s0">Python 3.</span>
+
+<span class="s0">- Developers who want to support both Python 2 and 3 with the same</span>
+  <span class="s0">source code (as I do now in ftputil) would &quot;inherit&quot; the &quot;dual API&quot;</span>
+  <span class="s0">and would have to use different wrapper code depending on the Python</span>
+  <span class="s0">version their code is run under.</span>
+
+<span class="s0">For these reasons, I `ended up`_ choosing the same API semantics for</span>
+<span class="s0">Python 2 and 3.</span>
+
+<span class="s0">.. _`ended up`: https://groups.google.com/forum/?fromgroups=#!topic/comp.lang.python/XKof6DpNyH4</span>
+
+<span class="s0">Why don't you use the six_ module to be able to support Python 2.4 and 2.5?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">.. _six: https://pypi.python.org/pypi/six/</span>
+
+<span class="s0">There are two reasons:</span>
+
+<span class="s0">- ftputil so far has no dependencies other than the Python standard</span>
+  <span class="s0">library, and I think that's a nice feature.</span>
+
+<span class="s0">- Although ``six`` makes it easier to support Python 2.4/2.5 and</span>
+  <span class="s0">Python 3 at the same time, the resulting code is somewhat awkward. I</span>
+  <span class="s0">wanted a code base that feels more like &quot;modern Python&quot;; I wanted to</span>
+  <span class="s0">use the Python 3 features backported to Python 2.6 and 2.7.</span>
+
+<span class="s0">Why don't you use 2to3_ to generate the Python 3 version of ftputil?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">.. _2to3: http://docs.python.org/2/library/2to3.html</span>
+
+<span class="s0">I had considered this when I started adapting the ftputil source code</span>
+<span class="s0">for Python 3. On the other hand, although using 2to3 used to be the</span>
+<span class="s0">recommended approach for Python 3 support, even `rather large</span>
+<span class="s0">projects`_ have chosen the route of having one code base and using it</span>
+<span class="s0">unmodified for Python 2 and 3.</span>
+
+<span class="s0">.. _`rather large projects`: https://docs.djangoproject.com/en/dev/topics/python3/</span>
+
+<span class="s0">When I looked into this approach for ftputil 3.0, it became quickly</span>
+<span class="s0">obvious that it would be easier and I found it worked out very well.</span>
+</pre>
+</body>
+</html>

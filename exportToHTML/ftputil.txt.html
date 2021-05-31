@@ -1,0 +1,1799 @@
+<html>
+<head>
+<title>ftputil.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #a9b7c6;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ftputil.txt</font>
+</center></td></tr></table>
+<pre><span class="s0">``ftputil`` -- a high-level FTP client library</span>
+<span class="s0">==============================================</span>
+
+<span class="s0">:Version:   5.0.1</span>
+<span class="s0">:Date:      2021-03-18</span>
+<span class="s0">:Summary:   high-level FTP client library for Python</span>
+<span class="s0">:Keywords:  FTP, ``ftplib`` substitute, virtual filesystem, pure Python</span>
+<span class="s0">:Author:    Stefan Schwarzer &lt;sschwarzer@sschwarzer.net&gt;</span>
+
+<span class="s0">.. contents::</span>
+
+
+<span class="s0">Introduction</span>
+<span class="s0">------------</span>
+
+<span class="s0">The ``ftputil`` module is a high-level interface to the ftplib_</span>
+<span class="s0">module. The `FTPHost objects`_ generated from it allow many operations</span>
+<span class="s0">similar to those of os_, `os.path`_ and `shutil`_.</span>
+
+<span class="s0">.. _ftplib: https://docs.python.org/library/ftplib.html</span>
+<span class="s0">.. _os: https://docs.python.org/library/os.html</span>
+<span class="s0">.. _`os.stat`: https://docs.python.org/library/os.html#os.stat</span>
+<span class="s0">.. _`os.path`: https://docs.python.org/library/os.path.html</span>
+<span class="s0">.. _`shutil`: https://docs.python.org/library/shutil.html</span>
+
+<span class="s0">Example::</span>
+
+    <span class="s0">import ftputil</span>
+
+    <span class="s0"># Download some files from the login directory.</span>
+    <span class="s0">with ftputil.FTPHost(&quot;ftp.domain.com&quot;, &quot;user&quot;, &quot;password&quot;) as ftp_host:</span>
+        <span class="s0">names = ftp_host.listdir(ftp_host.curdir)</span>
+        <span class="s0">for name in names:</span>
+            <span class="s0">if ftp_host.path.isfile(name):</span>
+                <span class="s0">ftp_host.download(name, name)  # remote, local</span>
+        <span class="s0"># Make a new directory and copy a remote file into it.</span>
+        <span class="s0">ftp_host.mkdir(&quot;newdir&quot;)</span>
+        <span class="s0">with ftp_host.open(&quot;index.html&quot;, &quot;rb&quot;) as source:</span>
+            <span class="s0">with ftp_host.open(&quot;newdir/index.html&quot;, &quot;wb&quot;) as target:</span>
+                <span class="s0">ftp_host.copyfileobj(source, target)  # similar to shutil.copyfileobj</span>
+
+<span class="s0">Also, there are `FTPHost.lstat`_ and `FTPHost.stat`_ to request size and</span>
+<span class="s0">modification time of a file. The latter can also follow links, similar</span>
+<span class="s0">to `os.stat`_. `FTPHost.walk`_ and `FTPHost.path.walk`_ work, too.</span>
+
+
+<span class="s0">``ftputil`` features</span>
+<span class="s0">--------------------</span>
+
+<span class="s0">* Method names are familiar from Python's ``os``, ``os.path`` and</span>
+  <span class="s0">``shutil`` modules. For example, use ``os.path.join`` to join</span>
+  <span class="s0">paths for a local file system and ``ftp_host.path.join`` to join</span>
+  <span class="s0">paths for a remote FTP file system.</span>
+
+<span class="s0">* Remote file system navigation (``getcwd``, ``chdir``)</span>
+
+<span class="s0">* Upload and download files (``upload``, ``upload_if_newer``,</span>
+  <span class="s0">``download``, ``download_if_newer``)</span>
+
+<span class="s0">* Time zone synchronization between client and server (needed</span>
+  <span class="s0">for ``upload_if_newer`` and ``download_if_newer``)</span>
+
+<span class="s0">* Create and remove directories (``mkdir``, ``makedirs``, ``rmdir``,</span>
+  <span class="s0">``rmtree``) and remove files (``remove``)</span>
+
+<span class="s0">* Get information about directories, files and links (``listdir``,</span>
+  <span class="s0">``stat``, ``lstat``, ``exists``, ``isdir``, ``isfile``, ``islink``,</span>
+  <span class="s0">``abspath``, ``dirname``, ``basename`` etc.)</span>
+
+<span class="s0">* Iterate over remote file systems (``walk``)</span>
+
+<span class="s0">* Local caching of results from ``lstat`` and ``stat`` calls to reduce</span>
+  <span class="s0">network access (also applies to ``exists``, ``getmtime`` etc.).</span>
+
+<span class="s0">* Read files from and write files to remote hosts via</span>
+  <span class="s0">file-like objects (``FTPHost.open``; the generated file-like objects</span>
+  <span class="s0">have the familiar methods like ``read``, ``readline``, ``readlines``,</span>
+  <span class="s0">``write``, ``writelines`` and ``close``. You can also iterate over</span>
+  <span class="s0">these files line by line in a ``for`` loop.</span>
+
+
+<span class="s0">Exception hierarchy</span>
+<span class="s0">-------------------</span>
+
+<span class="s0">The exceptions are in the namespace of the ``ftputil.error`` module, e. g.</span>
+<span class="s0">``ftputil.error.TemporaryError``.</span>
+
+<span class="s0">The exception classes are organized as follows::</span>
+
+    <span class="s0">FTPError</span>
+        <span class="s0">FTPOSError(FTPError, OSError)</span>
+            <span class="s0">PermanentError(FTPOSError)</span>
+                <span class="s0">CommandNotImplementedError(PermanentError)</span>
+            <span class="s0">TemporaryError(FTPOSError)</span>
+        <span class="s0">FTPIOError(FTPError)</span>
+        <span class="s0">InternalError(FTPError)</span>
+            <span class="s0">InaccessibleLoginDirError(InternalError)</span>
+            <span class="s0">NoEncodingError(InternalError)</span>
+            <span class="s0">ParserError(InternalError)</span>
+            <span class="s0">RootDirError(InternalError)</span>
+            <span class="s0">TimeShiftError(InternalError)</span>
+
+<span class="s0">and are described here:</span>
+
+<span class="s0">- ``FTPError``</span>
+
+  <span class="s0">is the root of the exception hierarchy of the module.</span>
+
+<span class="s0">- ``FTPOSError``</span>
+
+  <span class="s0">is derived from ``OSError``. This is for similarity between the</span>
+  <span class="s0">os module and ``FTPHost`` objects. Compare</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">try:</span>
+        <span class="s0">os.chdir(&quot;nonexisting_directory&quot;)</span>
+    <span class="s0">except OSError:</span>
+        <span class="s0">...</span>
+
+  <span class="s0">with</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">host = ftputil.FTPHost(&quot;host&quot;, &quot;user&quot;, &quot;password&quot;)</span>
+    <span class="s0">try:</span>
+        <span class="s0">host.chdir(&quot;nonexisting_directory&quot;)</span>
+    <span class="s0">except OSError:</span>
+        <span class="s0">...</span>
+
+  <span class="s0">Imagine a function</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">def func(path, file):</span>
+        <span class="s0">...</span>
+
+  <span class="s0">which works on the local file system and catches ``OSErrors``. If you</span>
+  <span class="s0">change the parameter list to</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">def func(path, file, os=os):</span>
+        <span class="s0">...</span>
+
+  <span class="s0">where ``os`` denotes the ``os`` module, you can call the function also as</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">host = ftputil.FTPHost(&quot;host&quot;, &quot;user&quot;, &quot;password&quot;)</span>
+    <span class="s0">func(path, file, os=host)</span>
+
+  <span class="s0">to use the same code for both a local and remote file system.</span>
+  <span class="s0">Another similarity between ``OSError`` and ``FTPOSError`` is that</span>
+  <span class="s0">the latter holds the FTP server return code in the ``errno``</span>
+  <span class="s0">attribute of the exception object and the error text in</span>
+  <span class="s0">``strerror``.</span>
+
+<span class="s0">- ``PermanentError``</span>
+
+  <span class="s0">is raised for 5xx return codes from the FTP server. This</span>
+  <span class="s0">corresponds to ``ftplib.error_perm`` (though ``PermanentError`` and</span>
+  <span class="s0">``ftplib.error_perm`` are *not* identical).</span>
+
+<span class="s0">- ``CommandNotImplementedError``</span>
+
+  <span class="s0">indicates that an underlying command the code tries to use is not</span>
+  <span class="s0">implemented. For an example, see the description of the</span>
+  <span class="s0">`FTPHost.chmod`_ method.</span>
+
+<span class="s0">- ``TemporaryError``</span>
+
+  <span class="s0">is raised for FTP return codes from the 4xx category. This</span>
+  <span class="s0">corresponds to ``ftplib.error_temp`` (though ``TemporaryError`` and</span>
+  <span class="s0">``ftplib.error_temp`` are *not* identical).</span>
+
+<span class="s0">- ``FTPIOError``</span>
+
+  <span class="s0">denotes an I/O error on the remote host. This appears</span>
+  <span class="s0">mainly with file-like objects that are retrieved by calling</span>
+  <span class="s0">``FTPHost.open``. Compare</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">&gt;&gt;&gt; try:</span>
+    <span class="s0">...     f = open(&quot;not_there&quot;)</span>
+    <span class="s0">... except IOError as obj:</span>
+    <span class="s0">...     print(obj.errno)</span>
+    <span class="s0">...     print(obj.strerror)</span>
+    <span class="s0">...</span>
+    <span class="s0">2</span>
+    <span class="s0">No such file or directory</span>
+
+  <span class="s0">with</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">&gt;&gt;&gt; ftp_host = ftputil.FTPHost(&quot;host&quot;, &quot;user&quot;, &quot;password&quot;)</span>
+    <span class="s0">&gt;&gt;&gt; try:</span>
+    <span class="s0">...     f = ftp_host.open(&quot;not_there&quot;)</span>
+    <span class="s0">... except IOError as obj:</span>
+    <span class="s0">...     print(obj.errno)</span>
+    <span class="s0">...     print(obj.strerror)</span>
+    <span class="s0">...</span>
+    <span class="s0">550</span>
+    <span class="s0">550 not_there: No such file or directory.</span>
+
+  <span class="s0">As you can see, both code snippets are similar. However, the error</span>
+  <span class="s0">codes aren't the same.</span>
+
+<span class="s0">- ``InternalError``</span>
+
+  <span class="s0">subsumes exception classes for signaling errors due to limitations</span>
+  <span class="s0">of the FTP protocol or the concrete implementation of ``ftputil``.</span>
+
+<span class="s0">- ``InaccessibleLoginDirError``</span>
+
+  <span class="s0">This exception is raised if the directory in which &quot;you&quot; are placed</span>
+  <span class="s0">upon login is not accessible, i. e. a ``chdir`` call with the</span>
+  <span class="s0">directory as argument would fail.</span>
+
+<span class="s0">- ``NoEncodingError``</span>
+
+  <span class="s0">is raised if an FTP session instance doesn't have an ``encoding``</span>
+  <span class="s0">attribute (see also `session factories`_).</span>
+
+<span class="s0">- ``ParserError``</span>
+
+  <span class="s0">is used for errors during the parsing of directory</span>
+  <span class="s0">listings from the server. This exception is used by the ``FTPHost``</span>
+  <span class="s0">methods ``stat``, ``lstat``, and ``listdir``.</span>
+
+<span class="s0">- ``RootDirError``</span>
+
+  <span class="s0">Because of the implementation of the ``lstat`` method it is not</span>
+  <span class="s0">possible to do a ``stat`` call on the root directory ``/``.</span>
+  <span class="s0">If you know *any* way to do it, please let me know. :-)</span>
+
+  <span class="s0">This problem does *not* affect stat calls on items *in* the root</span>
+  <span class="s0">directory.</span>
+
+<span class="s0">- ``TimeShiftError``</span>
+
+  <span class="s0">is used to denote errors which relate to setting the `time shift`_.</span>
+
+
+<span class="s0">``FTPHost`` objects</span>
+<span class="s0">-------------------</span>
+
+<span class="s0">.. _`FTPHost construction`:</span>
+
+<span class="s0">Construction</span>
+<span class="s0">~~~~~~~~~~~~</span>
+
+<span class="s0">Introduction</span>
+<span class="s0">````````````</span>
+
+<span class="s0">``FTPHost`` instances can be created with the following call::</span>
+
+    <span class="s0">ftp_host = ftputil.FTPHost(server, user, password, account,</span>
+                               <span class="s0">session_factory=ftplib.FTP)</span>
+
+<span class="s0">The first four parameters are strings with the same meaning as for the</span>
+<span class="s0">FTP class in the ``ftplib`` module. Usually the ``account`` and</span>
+<span class="s0">``session_factory`` arguments aren't needed though.</span>
+
+<span class="s0">``FTPHost`` objects can also be used in a ``with`` statement::</span>
+
+    <span class="s0">import ftputil</span>
+
+    <span class="s0">with ftputil.FTPHost(server, user, password) as ftp_host:</span>
+        <span class="s0">print(ftp_host.listdir(ftp_host.curdir))</span>
+
+<span class="s0">After the ``with`` block, the ``FTPHost`` instance and the</span>
+<span class="s0">associated FTP sessions will be closed automatically.</span>
+
+<span class="s0">If something goes wrong during the ``FTPHost`` construction or in the</span>
+<span class="s0">body of the ``with`` statement, the instance is closed as well.</span>
+<span class="s0">Exceptions will be propagated (as with ``try ... finally``).</span>
+
+<span class="s0">.. _`session factory`:</span>
+
+<span class="s0">Session factories</span>
+<span class="s0">`````````````````</span>
+
+<span class="s0">The keyword argument ``session_factory`` may be used to generate FTP</span>
+<span class="s0">connections with other factories than the default ``ftplib.FTP``. For</span>
+<span class="s0">example, the standard library of Python 3 contains a class</span>
+<span class="s0">``ftplib.FTP_TLS`` which extends ``ftplib.FTP`` to use an encrypted</span>
+<span class="s0">connection.</span>
+
+<span class="s0">In fact, all positional and keyword arguments other than</span>
+<span class="s0">``session_factory`` are passed to the factory to generate a new</span>
+<span class="s0">background session. This also happens for every remote file that is</span>
+<span class="s0">opened; see below.</span>
+
+<span class="s0">This functionality of the constructor also allows to wrap</span>
+<span class="s0">``ftplib.FTP`` objects to do something that wouldn't be possible with</span>
+<span class="s0">the ``ftplib.FTP`` constructor alone.</span>
+
+<span class="s0">As an example, assume you want to connect to another than the default</span>
+<span class="s0">port, but ``ftplib.FTP`` only offers this by means of its ``connect``</span>
+<span class="s0">method, not via its constructor. One solution is to use a custom</span>
+<span class="s0">class as a session factory::</span>
+
+    <span class="s0">import ftplib</span>
+    <span class="s0">import ftputil</span>
+
+    <span class="s0">EXAMPLE_PORT = 50001</span>
+
+    <span class="s0">class MySession(ftplib.FTP):</span>
+
+        <span class="s0">def __init__(self, host, userid, password, port):</span>
+            <span class="s0">&quot;&quot;&quot;Act like ftplib.FTP's constructor but connect to another port.&quot;&quot;&quot;</span>
+            <span class="s0">ftplib.FTP.__init__(self)</span>
+            <span class="s0">self.connect(host, port)</span>
+            <span class="s0">self.login(userid, password)</span>
+
+    <span class="s0"># Try _not_ to use an _instance_ `MySession()` as factory, -</span>
+    <span class="s0"># use the class itself.</span>
+    <span class="s0">with ftputil.FTPHost(host, userid, password, port=EXAMPLE_PORT,</span>
+                         <span class="s0">session_factory=MySession) as ftp_host:</span>
+        <span class="s0"># Use `ftp_host` as usual.</span>
+        <span class="s0">...</span>
+
+<span class="s0">On login, the format of the directory listings (needed for stat'ing</span>
+<span class="s0">files and directories) should be determined automatically. If not,</span>
+<span class="s0">please `enter a ticket`_.</span>
+
+<span class="s0">.. _`enter a ticket`: https://ftputil.sschwarzer.net/issuetrackernotes</span>
+
+<span class="s0">For the most common uses you don't need to create your own session</span>
+<span class="s0">factory class though. The ``ftputil.session`` module has a function</span>
+<span class="s0">``session_factory`` that can create session factories for a variety</span>
+<span class="s0">of parameters::</span>
+
+    <span class="s0">session_factory(base_class=ftplib.FTP,</span>
+                    <span class="s0">port=21,</span>
+                    <span class="s0">use_passive_mode=None,</span>
+                    <span class="s0">encrypt_data_channel=True,</span>
+                    <span class="s0">encoding=None,</span>
+                    <span class="s0">debug_level=None)</span>
+
+<span class="s0">with</span>
+
+<span class="s0">- ``base_class`` is a base class to inherit a new session factory</span>
+  <span class="s0">class from. By default, this is ``ftplib.FTP`` from the Python</span>
+  <span class="s0">standard library.</span>
+
+<span class="s0">- ``port`` is the command channel port. The default is 21, used in most</span>
+  <span class="s0">FTP server configurations.</span>
+
+<span class="s0">- ``use_passive_mode`` is either a boolean that determines whether</span>
+  <span class="s0">passive mode should be used or ``None``. ``None`` means to let the</span>
+  <span class="s0">base class choose active or passive mode.</span>
+
+<span class="s0">- ``encrypt_data_channel`` defines whether to encrypt the data channel</span>
+  <span class="s0">for secure connections. This is only supported for the base classes</span>
+  <span class="s0">``ftplib.FTP_TLS`` and ``M2Crypto.ftpslib.FTP_TLS``, otherwise the</span>
+  <span class="s0">parameter is ignored.</span>
+
+<span class="s0">- ``encoding`` can be a string to set the encoding of directory and</span>
+  <span class="s0">file paths on the remote server. (This has nothing to do with the</span>
+  <span class="s0">encoding of file contents!) If you pass a string and your base class</span>
+  <span class="s0">is neither ``ftplib.FTP`` nor ``ftplib.FTP_TLS``, the used heuristic</span>
+  <span class="s0">in ``session_factory`` may not work reliably. Therefore, if in</span>
+  <span class="s0">doubt, let ``encoding`` be ``None`` and define your ``base_class``</span>
+  <span class="s0">so that it sets the encoding you want.</span>
+
+  <span class="s0">Note: In Python 3.9, the default path encoding for ``ftplib.FTP``</span>
+  <span class="s0">and ``ftplib.FTP_TLS`` changed from previously &quot;latin-1&quot; to &quot;utf-8&quot;.</span>
+  <span class="s0">Hence, if you don't pass an ``encoding`` to ``session_factory``,</span>
+  <span class="s0">you'll get different path encodings for Python 3.8 and earlier vs.</span>
+  <span class="s0">Python 3.9 and later.</span>
+
+  <span class="s0">If you're sure that you always use only ASCII characters in your</span>
+  <span class="s0">remote paths, you don't need to worry about the path encoding and</span>
+  <span class="s0">don't need to use the ``encoding`` argument.</span>
+
+<span class="s0">- ``debug_level`` sets the debug level for FTP session instances. The</span>
+  <span class="s0">semantics is defined by the base class. For example, a debug level</span>
+  <span class="s0">of 2 causes the most verbose output for Python's ``ftplib.FTP``</span>
+  <span class="s0">class.</span>
+
+<span class="s0">All of these parameters can be combined. For example, you could use</span>
+
+<span class="s0">::</span>
+
+    <span class="s0">import ftplib</span>
+
+    <span class="s0">import ftputil</span>
+    <span class="s0">import ftputil.session</span>
+
+
+    <span class="s0">my_session_factory = ftputil.session.session_factory(</span>
+                           <span class="s0">base_class=ftpslib.FTP_TLS,</span>
+                           <span class="s0">port=31,</span>
+                           <span class="s0">encrypt_data_channel=True,</span>
+                           <span class="s0">encoding=&quot;UTF-8&quot;,</span>
+                           <span class="s0">debug_level=2)</span>
+
+    <span class="s0">with ftputil.FTPHost(server, user, password,</span>
+                         <span class="s0">session_factory=my_session_factory) as ftp_host:</span>
+        <span class="s0">...</span>
+
+<span class="s0">to create and use a session factory derived from ``ftplib.FTP_TLS``</span>
+<span class="s0">that connects on command channel 31, will encrypt the data channel,</span>
+<span class="s0">use the UTF-8 encoding for remote paths and print output for debug</span>
+<span class="s0">level 2.</span>
+
+<span class="s0">Note: Generally, you can achieve everything you can do with</span>
+<span class="s0">``ftputil.session.session_factory`` with an explicit session factory</span>
+<span class="s0">as described at the start of this section.</span>
+
+
+<span class="s0">Directory and file names</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">.. note::</span>
+
+   <span class="s0">Keep in mind that this section only applies to directory and file</span>
+   <span class="s0">*names*, not file *contents*. Encoding and decoding for file</span>
+   <span class="s0">contents is handled by the ``encoding`` argument for</span>
+   <span class="s0">`FTPHost.open`_.</span>
+
+<span class="s0">Generally, paths can be ``str`` or ``bytes`` objects (or `PathLike`_</span>
+<span class="s0">objects wrapping ``str`` or ``bytes``). However, you can't mix</span>
+<span class="s0">different string types (``bytes`` and ``str``) in one call (for</span>
+<span class="s0">example in ``FTPHost.path.join``). If a method gets a string argument</span>
+<span class="s0">(or a string argument wrapped in a PathLike_ object) and returns one</span>
+<span class="s0">or more strings, these strings will have the same string type</span>
+<span class="s0">(``bytes`` or ``str``) as the argument(s). Mixing different string</span>
+<span class="s0">types in one call (for example in ``FTPHost.path.join``) isn't allowed</span>
+<span class="s0">and will cause a ``TypeError``. These rules are the same as for local</span>
+<span class="s0">file system operations.</span>
+
+<span class="s0">.. _PathLike: https://docs.python.org/3/library/os.html#os.PathLike</span>
+
+<span class="s0">Although you can pass paths as ``str`` or ``bytes``, the former is</span>
+<span class="s0">recommended. See below for the reason.</span>
+
+<span class="s0">*If* you have directory or file names with non-ASCII characters, you</span>
+<span class="s0">need to be aware of the encoding the `session factory`_ (e. g.</span>
+<span class="s0">``ftplib.FTP``) uses. This needs to be the same encoding that the FTP</span>
+<span class="s0">server uses for the paths.</span>
+
+<span class="s0">The following diagram shows string conversions on the way from your</span>
+<span class="s0">code to the remote FTP server. The opposite way works analogously, so</span>
+<span class="s0">encoding steps in the diagram become decoding steps and decoding steps</span>
+<span class="s0">in the diagram become encoding steps.</span>
+
+<span class="s0">Both &quot;branching points&quot; in the upper and lower part of diagrams are</span>
+<span class="s0">independent, so depending on how you pass paths to ftputil and which</span>
+<span class="s0">file system API the FTP server uses, there are four possible</span>
+<span class="s0">combinations.</span>
+
+<span class="s0">::</span>
+
+     <span class="s0">+-----------+       +-----------+</span>
+     <span class="s0">| Your code |       | Your code |</span>
+     <span class="s0">+-----------+       +-----------+</span>
+          <span class="s0">|                    |</span>
+          <span class="s0">|  str               |  bytes</span>
+          <span class="s0">v                    v</span>
+    <span class="s0">+-------------+     +-------------+  decode with encoding of session,</span>
+    <span class="s0">| ftputil API |     | ftputil API |  e. g. `ftplib.FTP` instance</span>
+    <span class="s0">+-------------+     +-------------+</span>
+            <span class="s0">\               /</span>
+             <span class="s0">\     str     /</span>
+              <span class="s0">v           v</span>
+            <span class="s0">+---------------+  encode with encoding</span>
+            <span class="s0">|  ftplib API   |  specified in `FTP` instance</span>
+            <span class="s0">+---------------+</span>
+                    <span class="s0">|</span>
+                    <span class="s0">|  bytes</span>
+                    <span class="s0">v</span>
+             <span class="s0">+-------------+</span>
+             <span class="s0">| socket API  |</span>
+             <span class="s0">+-------------+</span>
+                <span class="s0">/       \</span>
+               <span class="s0">/         \                 local / client</span>
+    <span class="s0">- - - - - / - - - - - \ - - - - - - - - - - - - - - - - - - - - - -</span>
+             <span class="s0">/             \              remote / server</span>
+            <span class="s0">/     bytes     \</span>
+           <span class="s0">v                 v</span>
+    <span class="s0">+------------+      +------------+  decode with encoding from</span>
+    <span class="s0">| FTP server |      | FTP server |  FTP server configuration</span>
+    <span class="s0">+------------+      +------------+</span>
+          <span class="s0">|                   |</span>
+          <span class="s0">|  bytes            |  str</span>
+          <span class="s0">v                   v</span>
+   <span class="s0">+-------------+      +-------------+</span>
+   <span class="s0">| remote file |      | remote file |</span>
+   <span class="s0">| system API  |      | system API  |</span>
+   <span class="s0">+-------------+      +-------------+</span>
+           <span class="s0">\                 /</span>
+            <span class="s0">\      bytes    /</span>
+             <span class="s0">v             v</span>
+          <span class="s0">+-------------------+</span>
+          <span class="s0">|    file system    |</span>
+          <span class="s0">+-------------------+</span>
+
+<span class="s0">As you can see at the top of the diagram, if you use ``str`` objects</span>
+<span class="s0">(regular unicode strings), there's one fewer decoding step, and so one</span>
+<span class="s0">fewer source of problems. If you use ``bytes`` objects for paths,</span>
+<span class="s0">ftputil tries to get the encoding for the FTP server from the</span>
+<span class="s0">``encoding`` attribute of the session instance (say, an instance of</span>
+<span class="s0">``ftplib.FTP``). If no ``encoding`` attribute is present, a</span>
+<span class="s0">``NoEncodingError`` is raised.</span>
+
+<span class="s0">All encoding/decoding steps must use the same encoding, the encoding</span>
+<span class="s0">the server uses (at the bottom of the diagram). If the server uses the</span>
+<span class="s0">bytes from the socket directly, i. e. without an encoding step, you</span>
+<span class="s0">have to use the file system encoding.</span>
+
+<span class="s0">Until and including Python 3.8, the encoding implicitly assumed by</span>
+<span class="s0">the ``ftplib`` module was latin-1, so using ``bytes`` was the safest</span>
+<span class="s0">strategy. However, Python 3.9 made the ``encoding``</span>
+<span class="s0">configurable via an ``ftplib.FTP`` constructor argument ``encoding``,</span>
+<span class="s0">*but defaults to UTF-8*.</span>
+
+<span class="s0">If you don't pass a `session factory`_ to the ``ftputil.FTPHost``</span>
+<span class="s0">constructor, ftputil will use latin-1 encoding for the paths. This is</span>
+<span class="s0">the same value as in earlier ftputil versions in combination with</span>
+<span class="s0">Python 3.8 and earlier.</span>
+
+<span class="s0">Summary:</span>
+
+<span class="s0">- If possible, use only ASCII characters in paths.</span>
+<span class="s0">- If possible, pass paths to ftputil as ``str``, not ``bytes``.</span>
+<span class="s0">- If you use a custom session factory, the session instances created</span>
+  <span class="s0">by the factory must have an ``encoding`` attribute with the name of</span>
+  <span class="s0">the path encoding to use. If your session instances don't have an</span>
+  <span class="s0">``encoding`` attribute, ftputil raises a ``NoEncodingError`` when</span>
+  <span class="s0">the session is created.</span>
+
+
+<span class="s0">Hidden files and directories</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">Whether ftputil sees &quot;hidden&quot; files and directories (usually files or</span>
+<span class="s0">directories whose names start with a dot) depends on the FTP server</span>
+<span class="s0">configuration. By default, ftputil does *not* use the ``-a`` option in</span>
+<span class="s0">the FTP ``LIST`` command to find hidden files.</span>
+
+<span class="s0">To tell the server to list hidden directories and files, set</span>
+<span class="s0">``FTPHost.use_list_a_option`` to ``True``::</span>
+
+    <span class="s0">ftp_host = ftputil.FTPHost(server, user, password, account,</span>
+                               <span class="s0">session_factory=ftplib.FTP)</span>
+    <span class="s0">ftp_host.use_list_a_option = True</span>
+
+<span class="s0">Caveats:</span>
+
+<span class="s0">- If the server doesn't understand the ``-a`` option at all, the</span>
+  <span class="s0">server may interpret ``-a`` as the name of a file or directory,</span>
+  <span class="s0">which can result in odd behavior. Therefore, use ``-a`` only if</span>
+  <span class="s0">you're sure the server you're talking to supports it. Another</span>
+  <span class="s0">approach is to have test code for ``-a`` support and fall back to</span>
+  <span class="s0">not using the option.</span>
+
+<span class="s0">- Even if the server knows about the ``-a`` option, the server may</span>
+  <span class="s0">be configured to ignore it.</span>
+
+<span class="s0">``FTPHost`` attributes and methods</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">Attributes</span>
+<span class="s0">``````````</span>
+
+<span class="s0">- ``curdir``, ``pardir``, ``sep``</span>
+
+  <span class="s0">are strings which denote the current and the parent directory on the</span>
+  <span class="s0">remote server. ``sep`` holds the path separator. Though `RFC 959`_</span>
+  <span class="s0">(File Transfer Protocol) notes that these values may depend on the</span>
+  <span class="s0">FTP server implementation, the Unix variants seem to work well in</span>
+  <span class="s0">practice, even for non-Unix servers.</span>
+
+  <span class="s0">Nevertheless, it's recommended that you don't hardcode these values</span>
+  <span class="s0">for remote paths, but use `FTPHost.path`_ as you would use</span>
+  <span class="s0">``os.path`` to write platform-independent Python code for local</span>
+  <span class="s0">filesystems. Keep in mind that most, *but not all*, arguments of</span>
+  <span class="s0">``FTPHost`` methods refer to remote directories or files. For</span>
+  <span class="s0">example, in `FTPHost.upload`_, the first argument is a local</span>
+  <span class="s0">path and the second a remote path. Both of these should use their</span>
+  <span class="s0">respective path separators.</span>
+
+<span class="s0">.. _`FTPHost.upload`: `Uploading and downloading files`_</span>
+
+<span class="s0">Remote file system navigation</span>
+<span class="s0">`````````````````````````````</span>
+
+<span class="s0">- ``getcwd()``</span>
+
+  <span class="s0">returns the absolute current directory on the remote host. This</span>
+  <span class="s0">method works like ``os.getcwd``.</span>
+
+<span class="s0">- ``chdir(directory)``</span>
+
+  <span class="s0">sets the current directory on the FTP server. This resembles</span>
+  <span class="s0">``os.chdir``, as you may have expected.</span>
+
+<span class="s0">.. _`callback function`:</span>
+
+<span class="s0">Uploading and downloading files</span>
+<span class="s0">```````````````````````````````</span>
+
+<span class="s0">- ``upload(source, target, callback=None)``</span>
+
+  <span class="s0">copies a local source file (given by a filename, i. e. a string)</span>
+  <span class="s0">to the remote host under the name target. Both ``source`` and</span>
+  <span class="s0">``target`` may be absolute paths or relative to their corresponding</span>
+  <span class="s0">current directory (on the local or the remote host, respectively).</span>
+
+  <span class="s0">The file content is always transferred in binary mode.</span>
+
+  <span class="s0">The callback, if given, will be invoked for each transferred chunk</span>
+  <span class="s0">of data::</span>
+
+    <span class="s0">callback(chunk)</span>
+
+  <span class="s0">where ``chunk`` is a bytestring. An example usage of a callback</span>
+  <span class="s0">method is to display a progress indicator.</span>
+
+<span class="s0">- ``download(source, target, callback=None)``</span>
+
+  <span class="s0">performs a download from the remote source file to a local target</span>
+  <span class="s0">file. Both ``source`` and ``target`` are strings. See the</span>
+  <span class="s0">description of ``upload`` for more details.</span>
+
+<span class="s0">.. _`upload_if_newer`:</span>
+
+<span class="s0">- ``upload_if_newer(source, target, callback=None)``</span>
+
+  <span class="s0">is similar to the ``upload`` method. The only difference is that the</span>
+  <span class="s0">upload is only invoked if the time of the last modification for the</span>
+  <span class="s0">source file is more recent than that of the target file or the</span>
+  <span class="s0">target doesn't exist at all. The check for the last modification</span>
+  <span class="s0">time considers the precision of the timestamps and transfers a file</span>
+  <span class="s0">&quot;if in doubt&quot;. Consequently the code</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">ftp_host.upload_if_newer(&quot;source_file&quot;, &quot;target_file&quot;)</span>
+    <span class="s0">time.sleep(10)</span>
+    <span class="s0">ftp_host.upload_if_newer(&quot;source_file&quot;, &quot;target_file&quot;)</span>
+
+  <span class="s0">might upload the file again if the timestamp of the target file is</span>
+  <span class="s0">precise up to a minute, which is typically the case because the</span>
+  <span class="s0">remote datetime is determined by parsing a directory listing from</span>
+  <span class="s0">the server. To avoid unnecessary transfers, wait at least a minute</span>
+  <span class="s0">between calls of ``upload_if_newer`` for the same file. If it still</span>
+  <span class="s0">seems that a file is uploaded unnecessarily (or not when it should),</span>
+  <span class="s0">read the subsection on `time shift`_ settings.</span>
+
+  <span class="s0">If an upload actually happened, the return value of</span>
+  <span class="s0">``upload_if_newer`` is a ``True``, else ``False``.</span>
+
+  <span class="s0">Note that the method only checks the existence and/or the</span>
+  <span class="s0">modification time of the source and target file; it doesn't</span>
+  <span class="s0">compare any other file properties, say, the file size.</span>
+
+  <span class="s0">This also means that if a transfer is interrupted, the remote file</span>
+  <span class="s0">will have a newer modification time than the local file, and thus</span>
+  <span class="s0">the transfer won't be repeated if ``upload_if_newer`` is used a</span>
+  <span class="s0">second time. There are at least two possibilities after a failed</span>
+  <span class="s0">upload:</span>
+
+  <span class="s0">- use ``upload`` instead of ``upload_if_newer``, or</span>
+
+  <span class="s0">- remove the incomplete target file with ``FTPHost.remove``, then</span>
+    <span class="s0">use ``upload`` or ``upload_if_newer`` to transfer it again.</span>
+
+<span class="s0">.. _`download_if_newer`:</span>
+
+<span class="s0">- ``download_if_newer(source, target, callback=None)``</span>
+
+  <span class="s0">corresponds to ``upload_if_newer`` but performs a download from the</span>
+  <span class="s0">server to the local host. Read the descriptions of download and</span>
+  <span class="s0">``upload_if_newer`` for more information. If a download actually</span>
+  <span class="s0">happened, the return value is ``True``, else ``False``.</span>
+
+<span class="s0">.. _`time shift`:</span>
+<span class="s0">.. _`time zone correction`:</span>
+
+<span class="s0">Time zone correction</span>
+<span class="s0">````````````````````</span>
+
+<span class="s0">For ``upload_if_newer`` and ``download_if_newer`` to work correctly,</span>
+<span class="s0">the time zone of the server must be taken into account. By default,</span>
+<span class="s0">ftputil assumes that the timestamps in server listings are in UTC_.</span>
+
+<span class="s0">.. _UTC: https://en.wikipedia.org/wiki/Utc</span>
+
+<span class="s0">.. _`set_time_shift`:</span>
+
+<span class="s0">- ``set_time_shift(time_shift)``</span>
+
+  <span class="s0">sets the so-called time shift value, measured in seconds. The time</span>
+  <span class="s0">shift here is defined as the difference between the time used in</span>
+  <span class="s0">server listings and UTC.</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">time_shift = server_time - utc_time</span>
+
+  <span class="s0">For example, a server in Berlin/Germany set to the local time</span>
+  <span class="s0">(currently UTC+03:00), would require a time shift value of 3 *</span>
+  <span class="s0">3600.0 = 10800.0 seconds to be handled correctly by ftputil's</span>
+  <span class="s0">``upload_if_newer`` and ``download_if_newer``, as well as the</span>
+  <span class="s0">``stat`` and ``lstat`` calls.</span>
+
+  <span class="s0">Note that servers don't necessarily send their file system listings</span>
+  <span class="s0">in their local time zone. Some use UTC, which actually makes sense</span>
+  <span class="s0">because UTC doesn't lead to an ambiguity when there's a switch back</span>
+  <span class="s0">from the daylight saving time to the &quot;normal&quot; time of the server</span>
+  <span class="s0">location.</span>
+
+  <span class="s0">If the time shift value is invalid, for example its absolute value</span>
+  <span class="s0">is larger than 24 hours, a ``TimeShiftError`` is raised.</span>
+
+  <span class="s0">.. note::</span>
+
+     <span class="s0">Versions of ftputil before 4.0.0 used a different definition of</span>
+     <span class="s0">&quot;time shift&quot;, server_time - local_client_time.</span>
+
+     <span class="s0">This had the advantage that the default of 0.0 would be correct</span>
+     <span class="s0">*if* the server was set to the same time zone as the client</span>
+     <span class="s0">where ftputil runs. On the other hand, this approach meant that</span>
+     <span class="s0">the time shift depended on *two* time zones, not only the one</span>
+     <span class="s0">used on the server side. This could be confusing if server</span>
+     <span class="s0">and client *didn't* use the same time zone.</span>
+
+  <span class="s0">See also `synchronize_times`_ for a way to set the time shift with a</span>
+  <span class="s0">simple method call. If you can't use ``synchronize_times`` *and* the</span>
+  <span class="s0">server uses the same time zone as the client, you can set the time</span>
+  <span class="s0">shift value with</span>
+
+  <span class="s0">::</span>
+
+    <span class="s0">set_time_shift(</span>
+      <span class="s0">round( (datetime.datetime.now() - datetime.datetime.utcnow()).seconds, -2 )</span>
+    <span class="s0">)</span>
+
+<span class="s0">- ``time_shift()``</span>
+
+  <span class="s0">returns the currently-set time shift value. See ``set_time_shift``</span>
+  <span class="s0">above for its definition.</span>
+
+<span class="s0">.. _`synchronize_times`:</span>
+
+<span class="s0">- ``synchronize_times()``</span>
+
+  <span class="s0">synchronizes the local times of the server and the client, so that</span>
+  <span class="s0">`upload_if_newer`_ and `download_if_newer`_ work as expected, even</span>
+  <span class="s0">if the client and the server use different time zones. For this</span>
+  <span class="s0">to work, *all* of the following conditions must be true:</span>
+
+  <span class="s0">- The connection between server and client is established.</span>
+
+  <span class="s0">- The client has write access to the directory that is current when</span>
+    <span class="s0">``synchronize_times`` is called.</span>
+
+  <span class="s0">If you can't fulfill these conditions, you can nevertheless set the</span>
+  <span class="s0">time shift value explicitly with `set_time_shift`_. Trying to call</span>
+  <span class="s0">``synchronize_times`` if the above conditions aren't met results in</span>
+  <span class="s0">a ``TimeShiftError`` exception.</span>
+
+<span class="s0">Creating and removing directories</span>
+<span class="s0">`````````````````````````````````</span>
+
+<span class="s0">- ``mkdir(path, [mode])``</span>
+
+  <span class="s0">makes the given directory on the remote host. This does *not*</span>
+  <span class="s0">construct &quot;intermediate&quot; directories that don't already exist. The</span>
+  <span class="s0">``mode`` parameter is ignored; this is for compatibility with</span>
+  <span class="s0">``os.mkdir`` if an ``FTPHost`` object is passed into a function</span>
+  <span class="s0">instead of the ``os`` module. See the explanation in the subsection</span>
+  <span class="s0">`Exception hierarchy`_.</span>
+
+<span class="s0">- ``makedirs(path, [mode], exist_ok=False)``</span>
+
+  <span class="s0">works similar to ``mkdir`` (see above), but also makes intermediate</span>
+  <span class="s0">directories like ``os.makedirs``. The ``mode`` parameter is only</span>
+  <span class="s0">there for compatibility with ``os.makedirs`` and is ignored.</span>
+
+  <span class="s0">``exist_ok`` controls whether the existence of any directory but the</span>
+  <span class="s0">last in the ``path`` should be considered an error. If the default</span>
+  <span class="s0">``False`` is used or passed to ``makedirs``, ftputil will raise a</span>
+  <span class="s0">``PermanentError`` if any directory but the last already exists.</span>
+
+<span class="s0">- ``rmdir(path)``</span>
+
+  <span class="s0">removes the given remote directory. If it's not empty, raise</span>
+  <span class="s0">a ``PermanentError``.</span>
+
+<span class="s0">- ``rmtree(path, ignore_errors=False, onerror=None)``</span>
+
+  <span class="s0">removes the given remote, possibly non-empty, directory tree.</span>
+  <span class="s0">The interface of this method is rather complex, in favor of</span>
+  <span class="s0">compatibility with ``shutil.rmtree``.</span>
+
+  <span class="s0">If ``ignore_errors`` is set to a true value, errors are ignored.</span>
+  <span class="s0">If ``ignore_errors`` is a false value *and* ``onerror`` isn't</span>
+  <span class="s0">set, all exceptions occurring during the tree iteration and</span>
+  <span class="s0">processing are raised. These exceptions are all of type</span>
+  <span class="s0">``PermanentError``.</span>
+
+  <span class="s0">To distinguish between different kinds of errors, pass in a callable</span>
+  <span class="s0">for ``onerror``. This callable must accept three arguments:</span>
+  <span class="s0">``func``, ``path`` and ``exc_info``. ``func`` is a bound method</span>
+  <span class="s0">object, *for example* ``your_host_object.listdir``. ``path`` is the</span>
+  <span class="s0">path that was the recent argument of the respective method</span>
+  <span class="s0">(``listdir``, ``remove``, ``rmdir``). ``exc_info`` is the exception</span>
+  <span class="s0">info as it is gotten from ``sys.exc_info``.</span>
+
+  <span class="s0">The code of ``rmtree`` is taken from Python's ``shutil`` module</span>
+  <span class="s0">and adapted for ``ftputil``.</span>
+
+<span class="s0">Removing files and links</span>
+<span class="s0">````````````````````````</span>
+
+<span class="s0">- ``remove(path)``</span>
+
+  <span class="s0">removes a file or link on the remote host, similar to ``os.remove``.</span>
+
+<span class="s0">- ``unlink(path)``</span>
+
+  <span class="s0">is an alias for ``remove``.</span>
+
+<span class="s0">Retrieving information about directories, files and links</span>
+<span class="s0">`````````````````````````````````````````````````````````</span>
+
+<span class="s0">- ``listdir(path)``</span>
+
+  <span class="s0">returns a list containing the names of the files and directories</span>
+  <span class="s0">in the given path, similar to `os.listdir`_. The special names</span>
+  <span class="s0">``.`` and ``..`` are not in the list.</span>
+
+<span class="s0">The methods ``lstat`` and ``stat`` (and some others) rely on the</span>
+<span class="s0">directory listing format used by the FTP server. When connecting to a</span>
+<span class="s0">host, ``FTPHost``'s constructor tries to guess the right format, which</span>
+<span class="s0">succeeds in most cases. However, if you get strange results or</span>
+<span class="s0">``ParserError`` exceptions by a mere ``lstat`` call, please `enter a</span>
+<span class="s0">ticket`_.</span>
+
+<span class="s0">If ``lstat`` or ``stat`` give wrong modification dates or times, look</span>
+<span class="s0">at the methods that deal with time zone differences (`time zone</span>
+<span class="s0">correction`_).</span>
+
+<span class="s0">.. _`FTPHost.lstat`:</span>
+
+<span class="s0">- ``lstat(path)``</span>
+
+  <span class="s0">returns an object similar to that from `os.lstat`_. This is a kind</span>
+  <span class="s0">of tuple with additional attributes; see the documentation of the</span>
+  <span class="s0">``os`` module for details.</span>
+
+  <span class="s0">The result is derived by parsing the output of a ``LIST`` command on</span>
+  <span class="s0">the server. Therefore, the result from ``FTPHost.lstat`` can not</span>
+  <span class="s0">contain more information than the received text. In particular:</span>
+
+  <span class="s0">- User and group ids can only be determined as strings, not as</span>
+    <span class="s0">numbers, and that only if the server supplies them. This is</span>
+    <span class="s0">usually the case with Unix servers but maybe not for other FTP</span>
+    <span class="s0">servers.</span>
+
+  <span class="s0">- Values for the time of the last modification may be rough,</span>
+    <span class="s0">depending on the information from the server. For timestamps</span>
+    <span class="s0">older than a year, this usually means that the precision of the</span>
+    <span class="s0">modification timestamp value is not better than a day. For newer</span>
+    <span class="s0">files, the information may be accurate to a minute.</span>
+
+    <span class="s0">If the time of the last modification is before the epoch (usually</span>
+    <span class="s0">1970-01-01 UTC), set the time of the last modification to 0.0.</span>
+
+  <span class="s0">- Links can only be recognized on servers that provide this</span>
+    <span class="s0">information in the ``LIST`` output.</span>
+
+  <span class="s0">- Stat attributes that can't be determined at all are set to</span>
+  	<span class="s0">``None``. For example, a line of a directory listing may not</span>
+  	<span class="s0">contain the date/time of a directory's last modification.</span>
+
+  <span class="s0">- There's a special problem with stat'ing the root directory.</span>
+    <span class="s0">(Stat'ing things *in* the root directory is fine though.) In</span>
+    <span class="s0">this case, a ``RootDirError`` is raised. This has to do with the</span>
+    <span class="s0">algorithm used by ``(l)stat``, and I know of no approach which</span>
+    <span class="s0">mends this problem.</span>
+
+  <span class="s0">Currently, ``ftputil`` recognizes the common Unix-style and</span>
+  <span class="s0">Microsoft/DOS-style directory formats. If you need to parse output</span>
+  <span class="s0">from another server type, please write to the `ftputil mailing</span>
+  <span class="s0">list`_. You may consider `writing your own parser`_.</span>
+
+<span class="s0">.. _`os.listdir`: https://docs.python.org/library/os.html#os.listdir</span>
+<span class="s0">.. _`os.lstat`: https://docs.python.org/library/os.html#os.lstat</span>
+<span class="s0">.. _`ftputil mailing list`: https://ftputil.sschwarzer.net/mailinglist</span>
+<span class="s0">.. _`writing your own parser`: `Writing directory parsers`_</span>
+
+<span class="s0">.. _`FTPHost.stat`:</span>
+
+<span class="s0">- ``stat(path)``</span>
+
+  <span class="s0">returns ``stat`` information also for files which are pointed to by a</span>
+  <span class="s0">link. This method follows multiple links until a regular file or</span>
+  <span class="s0">directory is found. If an infinite link chain is encountered or the</span>
+  <span class="s0">target of the last link in the chain doesn't exist, a</span>
+  <span class="s0">``PermanentError`` is raised.</span>
+
+  <span class="s0">The limitations of the ``lstat`` method also apply to ``stat``.</span>
+
+<span class="s0">.. _`FTPHost.path`:</span>
+
+<span class="s0">``FTPHost`` objects contain an attribute named ``path``, similar to</span>
+<span class="s0">`os.path`_. The following methods can be applied to the remote host</span>
+<span class="s0">with the same semantics as for ``os.path``:</span>
+
+<span class="s0">::</span>
+
+    <span class="s0">abspath(path)</span>
+    <span class="s0">basename(path)</span>
+    <span class="s0">commonprefix(path_list)</span>
+    <span class="s0">dirname(path)</span>
+    <span class="s0">exists(path)</span>
+    <span class="s0">getmtime(path)</span>
+    <span class="s0">getsize(path)</span>
+    <span class="s0">isabs(path)</span>
+    <span class="s0">isdir(path)</span>
+    <span class="s0">isfile(path)</span>
+    <span class="s0">islink(path)</span>
+    <span class="s0">join(path1, path2, ...)</span>
+    <span class="s0">normcase(path)</span>
+    <span class="s0">normpath(path)</span>
+    <span class="s0">split(path)</span>
+    <span class="s0">splitdrive(path)</span>
+    <span class="s0">splitext(path)</span>
+    <span class="s0">walk(path, func, arg)</span>
+
+<span class="s0">Like Python's counterparts under `os.path`_, ``ftputil``'s ``is...``</span>
+<span class="s0">methods return ``False`` if they can't find the path given by their</span>
+<span class="s0">argument.</span>
+
+<span class="s0">Local caching of file system information</span>
+<span class="s0">````````````````````````````````````````</span>
+
+<span class="s0">Many of the above methods need access to the remote file system to</span>
+<span class="s0">obtain data on directories and files. To get the most recent data,</span>
+<span class="s0">*each* call to ``lstat``, ``stat``, ``exists``, ``getmtime`` etc.</span>
+<span class="s0">would require to fetch a directory listing from the server, which can</span>
+<span class="s0">make the program *very* slow. This effect is more pronounced for</span>
+<span class="s0">operations which mostly scan the file system rather than transferring</span>
+<span class="s0">file data.</span>
+
+<span class="s0">For this reason, ``ftputil`` by default saves the results from</span>
+<span class="s0">directory listings locally and reuses those results. This reduces</span>
+<span class="s0">network accesses and so speeds up the software a lot. However, since</span>
+<span class="s0">data is more rarely fetched from the server, the risk of obsolete data</span>
+<span class="s0">also increases. This will be discussed below.</span>
+
+<span class="s0">Caching can be controlled -- if necessary at all -- via the</span>
+<span class="s0">``stat_cache`` object in an ``FTPHost``'s namespace. For example,</span>
+<span class="s0">after calling</span>
+
+<span class="s0">::</span>
+
+    <span class="s0">ftp_host = ftputil.FTPHost(host, user, password)</span>
+
+<span class="s0">the cache can be accessed as ``ftp_host.stat_cache``.</span>
+
+<span class="s0">While ``ftputil`` usually manages the cache quite well, there are two</span>
+<span class="s0">possible reasons for modifying cache parameters.</span>
+
+<span class="s0">The first is when the number of possible entries is too low. You may</span>
+<span class="s0">notice that when you are processing very large directories and the</span>
+<span class="s0">program becomes much slower than before. It's common for code to read</span>
+<span class="s0">a directory with ``listdir`` and then process the found directories</span>
+<span class="s0">and files. This can also happen implicitly by a call to</span>
+<span class="s0">``FTPHost.walk``. Since version 2.6 ``ftputil`` automatically</span>
+<span class="s0">increases the cache size if directories with more entries than the</span>
+<span class="s0">current maximum cache size are to be scanned. Most of the time, this</span>
+<span class="s0">works fine.</span>
+
+<span class="s0">However, if you need access to stat data for several directories at</span>
+<span class="s0">the same time, you may need to increase the cache explicitly. This is</span>
+<span class="s0">done by the ``resize`` method::</span>
+
+    <span class="s0">ftp_host.stat_cache.resize(20000)</span>
+
+<span class="s0">where the argument is the maximum number of ``lstat`` results to store</span>
+<span class="s0">(the default is 5000, in versions before 2.6 it was 1000). Note that</span>
+<span class="s0">each path on the server, e. g. &quot;/home/schwa/some_dir&quot;, corresponds to</span>
+<span class="s0">a single cache entry. Methods like ``exists`` or ``getmtime`` all</span>
+<span class="s0">derive their results from a previously fetched ``lstat`` result.</span>
+
+<span class="s0">The value 5000 above means that the cache will hold *at most* 5000</span>
+<span class="s0">entries (unless increased automatically by an explicit or implicit</span>
+<span class="s0">``listdir`` call, see above). If more are about to be stored, the</span>
+<span class="s0">entries which haven't been used for the longest time will be deleted</span>
+<span class="s0">to make place for newer entries.</span>
+
+<span class="s0">The second possible reason to change the cache parameters is to avoid</span>
+<span class="s0">stale cache data. Caching is so effective because it reduces network</span>
+<span class="s0">accesses. This can also be a disadvantage if the file system data on</span>
+<span class="s0">the remote server changes after a stat result has been retrieved; the</span>
+<span class="s0">client, when looking at the cached stat data, will use obsolete</span>
+<span class="s0">information.</span>
+
+<span class="s0">There are two potential ways to get such out-of-date stat data. The</span>
+<span class="s0">first happens when an ``FTPHost`` instance modifies a file path for</span>
+<span class="s0">which it has a cache entry, e. g. by calling ``remove`` or ``rmdir``.</span>
+<span class="s0">Such changes are handled transparently; the path will be deleted from</span>
+<span class="s0">the cache. A different matter are changes unknown to the ``FTPHost``</span>
+<span class="s0">object which inspects its cache. Obviously, for example, these are</span>
+<span class="s0">changes by programs running on the remote host. On the other hand,</span>
+<span class="s0">cache inconsistencies can also occur if two ``FTPHost`` objects change</span>
+<span class="s0">a file system simultaneously::</span>
+
+    <span class="s0">with (</span>
+      <span class="s0">ftputil.FTPHost(server, user1, password1) as ftp_host1,</span>
+      <span class="s0">ftputil.FTPHost(server, user1, password1) as ftp_host2</span>
+    <span class="s0">):</span>
+        <span class="s0">stat_result1 = ftp_host1.stat(&quot;some_file&quot;)</span>
+        <span class="s0">stat_result2 = ftp_host2.stat(&quot;some_file&quot;)</span>
+        <span class="s0">ftp_host2.remove(&quot;some_file&quot;)</span>
+        <span class="s0"># `ftp_host1` will still see the obsolete cache entry!</span>
+        <span class="s0">print(ftp_host1.stat(&quot;some_file&quot;))</span>
+        <span class="s0"># Will raise an exception since an `FTPHost` object</span>
+        <span class="s0"># knows of its own changes.</span>
+        <span class="s0">print(ftp_host2.stat(&quot;some_file&quot;))</span>
+
+<span class="s0">At first sight, it may appear to be a good idea to have a shared cache</span>
+<span class="s0">among several ``FTPHost`` objects. After some thinking, this turns out</span>
+<span class="s0">to be very error-prone. For example, it won't help with different</span>
+<span class="s0">processes using ``ftputil``. So, if you have to deal with concurrent</span>
+<span class="s0">write/read accesses to a server, you have to handle them explicitly.</span>
+
+<span class="s0">The most useful tool for this is the ``invalidate`` method. In the</span>
+<span class="s0">example above, it could be used like this::</span>
+
+    <span class="s0">with (</span>
+      <span class="s0">ftputil.FTPHost(server, user1, password1) as ftp_host1,</span>
+      <span class="s0">ftputil.FTPHost(server, user1, password1) as ftp_host2</span>
+    <span class="s0">):</span>
+        <span class="s0">stat_result1 = ftp_host1.stat(&quot;some_file&quot;)</span>
+        <span class="s0">stat_result2 = ftp_host2.stat(&quot;some_file&quot;)</span>
+        <span class="s0">ftp_host2.remove(&quot;some_file&quot;)</span>
+        <span class="s0"># Invalidate using an absolute path.</span>
+        <span class="s0">absolute_path = ftp_host1.path.abspath(</span>
+                          <span class="s0">ftp_host1.path.join(ftp_host1.getcwd(), &quot;some_file&quot;))</span>
+        <span class="s0">ftp_host1.stat_cache.invalidate(absolute_path)</span>
+        <span class="s0"># Will now raise an exception as it should.</span>
+        <span class="s0">print(ftp_host1.stat(&quot;some_file&quot;))</span>
+        <span class="s0"># Would raise an exception since an `FTPHost` object</span>
+        <span class="s0"># knows of its own changes, even without `invalidate`.</span>
+        <span class="s0">print(ftp_host2.stat(&quot;some_file&quot;))</span>
+
+<span class="s0">The method ``invalidate`` can be used on any *absolute* path, be it a</span>
+<span class="s0">directory, a file or a link.</span>
+
+<span class="s0">By default, the cache entries (if not replaced by newer ones) are</span>
+<span class="s0">stored for an infinite time. That is, if you start your Python process</span>
+<span class="s0">using ``ftputil`` and let it run for three days a stat call may still</span>
+<span class="s0">access cache data that old. To avoid this, you can set the ``max_age``</span>
+<span class="s0">attribute::</span>
+
+    <span class="s0">with ftputil.FTPHost(server, user, password) as ftp_host:</span>
+        <span class="s0">ftp_host.stat_cache.max_age = 60 * 60  # = 3600 seconds</span>
+
+<span class="s0">This sets the maximum age of entries in the cache to an hour. This</span>
+<span class="s0">means any entry older won't be retrieved from the cache but its data</span>
+<span class="s0">instead fetched again from the remote host and then again stored for</span>
+<span class="s0">up to an hour. To reset `max_age` to the default of unlimited age,</span>
+<span class="s0">i. e. cache entries never expire, use ``None`` as value.</span>
+
+<span class="s0">If you are certain that the cache will be in the way, you can disable</span>
+<span class="s0">and later re-enable it completely with ``disable`` and ``enable``::</span>
+
+    <span class="s0">with ftputil.FTPHost(server, user, password) as ftp_host:</span>
+        <span class="s0">ftp_host.stat_cache.disable()</span>
+        <span class="s0">...</span>
+        <span class="s0">ftp_host.stat_cache.enable()</span>
+
+<span class="s0">During that time, the cache won't be used; all data will be fetched</span>
+<span class="s0">from the network. After enabling the cache again, its entries will be</span>
+<span class="s0">the same as when the cache was disabled, that is, entries won't get</span>
+<span class="s0">updated with newer data during this period. Note that even when the</span>
+<span class="s0">cache is disabled, the file system data in the code can become</span>
+<span class="s0">inconsistent::</span>
+
+    <span class="s0">with ftputil.FTPHost(server, user, password) as ftp_host:</span>
+        <span class="s0">ftp_host.stat_cache.disable()</span>
+        <span class="s0">if ftp_host.path.exists(&quot;some_file&quot;):</span>
+            <span class="s0">mtime = ftp_host.path.getmtime(&quot;some_file&quot;)</span>
+
+<span class="s0">In that case, the file ``some_file`` may have been removed by another</span>
+<span class="s0">process between the calls to ``exists`` and ``getmtime``!</span>
+
+<span class="s0">Iteration over directories</span>
+<span class="s0">``````````````````````````</span>
+
+<span class="s0">.. _`FTPHost.walk`:</span>
+
+<span class="s0">- ``walk(top, topdown=True, onerror=None, followlinks=False)``</span>
+
+  <span class="s0">iterates over a directory tree, similar to `os.walk`_. Actually,</span>
+  <span class="s0">``FTPHost.walk`` uses the code from Python with just the necessary</span>
+  <span class="s0">modifications, so see the linked documentation.</span>
+
+<span class="s0">.. _`os.walk`: https://docs.python.org/2/library/os.html#os.walk</span>
+
+<span class="s0">.. _`FTPHost.path.walk`:</span>
+
+<span class="s0">- ``path.walk(path, func, arg)``</span>
+
+  <span class="s0">Similar to ``os.path.walk``, the ``walk`` method in</span>
+  <span class="s0">`FTPHost.path`_ can be used, though ``FTPHost.walk`` is probably</span>
+  <span class="s0">easier to use.</span>
+
+<span class="s0">Other methods</span>
+<span class="s0">`````````````</span>
+
+<span class="s0">- ``close()``</span>
+
+  <span class="s0">closes the connection to the remote host. After this, no more</span>
+  <span class="s0">interaction with the FTP server is possible with this ``FTPHost``</span>
+  <span class="s0">object. Usually you don't need to close an ``FTPHost`` instance</span>
+  <span class="s0">with ``close`` if you set up the instance in a ``with`` statement.</span>
+
+<span class="s0">- ``rename(source, target)``</span>
+
+  <span class="s0">renames the source file (or directory) on the FTP server.</span>
+
+<span class="s0">.. _`FTPHost.chmod`:</span>
+
+<span class="s0">- ``chmod(path, mode)``</span>
+
+  <span class="s0">sets the access mode (permission flags) for the given path. The mode</span>
+  <span class="s0">is an integer as returned for the mode by the ``stat`` and ``lstat``</span>
+  <span class="s0">methods. Be careful: Usually, mode values are written as octal</span>
+  <span class="s0">numbers, for example 0755 to make a directory readable and writable</span>
+  <span class="s0">for the owner, but not writable for the group and others. If you</span>
+  <span class="s0">want to use such octal values, rely on Python's support for them::</span>
+
+    <span class="s0">ftp_host.chmod(&quot;some_directory&quot;, 0o755)</span>
+
+  <span class="s0">Not all FTP servers support the ``chmod`` command. In case of</span>
+  <span class="s0">an exception, how do you know if the path doesn't exist or if</span>
+  <span class="s0">the command itself is invalid? If the FTP server complies with</span>
+  <span class="s0">`RFC 959`_, it should return a status code 502 if the ``SITE CHMOD``</span>
+  <span class="s0">command isn't allowed. ``ftputil`` maps this special error</span>
+  <span class="s0">response to a ``CommandNotImplementedError`` which is derived from</span>
+  <span class="s0">``PermanentError``.</span>
+
+  <span class="s0">So you need to code like this::</span>
+
+    <span class="s0">with ftputil.FTPHost(server, user, password) as ftp_host:</span>
+        <span class="s0">try:</span>
+            <span class="s0">ftp_host.chmod(&quot;some_file&quot;, 0o644)</span>
+        <span class="s0">except ftputil.error.CommandNotImplementedError:</span>
+            <span class="s0"># `chmod` not supported</span>
+            <span class="s0">...</span>
+        <span class="s0">except ftputil.error.PermanentError:</span>
+            <span class="s0"># Possibly a non-existent file</span>
+            <span class="s0">...</span>
+
+  <span class="s0">Because the ``CommandNotImplementedError`` is more specific, you</span>
+  <span class="s0">have to test for it first.</span>
+
+<span class="s0">.. _`RFC 959`: `RFC 959 - File Transfer Protocol (FTP)`_</span>
+
+<span class="s0">- ``copyfileobj(source, target, length=64*1024)``</span>
+
+  <span class="s0">copies the contents from the file-like object ``source`` to the</span>
+  <span class="s0">file-like object ``target``. The only difference to</span>
+  <span class="s0">``shutil.copyfileobj`` is the default buffer size. Note that</span>
+  <span class="s0">arbitrary file-like objects can be used as arguments (e. g. local</span>
+  <span class="s0">files, remote FTP files).</span>
+
+  <span class="s0">However, the interfaces of ``source`` and ``target`` have to match;</span>
+  <span class="s0">the string type read from ``source`` must be an accepted string type</span>
+  <span class="s0">when written to ``target``. For example, if you open ``source`` in</span>
+  <span class="s0">Python 3 as a local text file and ``target`` as a remote file object</span>
+  <span class="s0">in binary mode, the transfer will fail since ``source.read`` gives</span>
+  <span class="s0">unicode strings (``str``) whereas ``target.write`` only accepts byte</span>
+  <span class="s0">strings (``bytes``).</span>
+
+  <span class="s0">See `File-like objects`_ for the construction and use of remote</span>
+  <span class="s0">file-like objects.</span>
+
+<span class="s0">.. _`set_parser`:</span>
+
+<span class="s0">- ``set_parser(parser)``</span>
+
+  <span class="s0">sets a custom parser for FTP directories. Note that you have to pass</span>
+  <span class="s0">in a parser *instance*, not the class.</span>
+
+  <span class="s0">An `extra section`_ shows how to write own parsers if the default</span>
+  <span class="s0">parsers in ``ftputil`` don't work for you.</span>
+
+<span class="s0">.. _`extra section`: `Writing directory parsers`_</span>
+
+<span class="s0">.. _`keep_alive`:</span>
+
+<span class="s0">- ``keep_alive()``</span>
+
+  <span class="s0">attempts to keep the connection to the remote server active in order</span>
+  <span class="s0">to prevent timeouts from happening. This method is primarily</span>
+  <span class="s0">intended to keep the underlying FTP connection of an ``FTPHost``</span>
+  <span class="s0">object alive while a file is uploaded or downloaded. This will</span>
+  <span class="s0">require either an extra thread while the upload or download is in</span>
+  <span class="s0">progress or calling ``keep_alive`` from a `callback function`_.</span>
+
+  <span class="s0">The ``keep_alive`` method won't help if the connection has already</span>
+  <span class="s0">timed out. In this case, a ``ftputil.error.TemporaryError`` is raised.</span>
+
+  <span class="s0">If you want to use this method, keep in mind that FTP servers define</span>
+  <span class="s0">a timeout for a reason. A timeout prevents running out of server</span>
+  <span class="s0">connections because of clients that never disconnect on their own.</span>
+
+  <span class="s0">Note that the ``keep_alive`` method does *not* affect the &quot;hidden&quot;</span>
+  <span class="s0">FTP child connections established by ``FTPHost.open`` (see section</span>
+  <span class="s0">`FTPHost instances vs. FTP connections`_ for details). You *can't*</span>
+  <span class="s0">use ``keep_alive`` to avoid a timeout in a stalling transfer like</span>
+  <span class="s0">this::</span>
+
+      <span class="s0">with ftputil.FTPHost(server, userid, password) as ftp_host:</span>
+          <span class="s0">with ftp_host.open(&quot;some_remote_file&quot;, &quot;rb&quot;) as fobj:</span>
+              <span class="s0">data = fobj.read(100)</span>
+              <span class="s0"># _Futile_ attempt to avoid file connection timeout.</span>
+              <span class="s0">for i in range(15):</span>
+                  <span class="s0">time.sleep(60)</span>
+                  <span class="s0">ftp_host.keep_alive()</span>
+              <span class="s0"># Will raise an `ftputil.error.TemporaryError`.</span>
+              <span class="s0">data += fobj.read()</span>
+
+
+<span class="s0">.. _`FTPHost.open`:</span>
+
+<span class="s0">File-like objects</span>
+<span class="s0">-----------------</span>
+
+<span class="s0">Construction</span>
+<span class="s0">~~~~~~~~~~~~</span>
+
+<span class="s0">Basics</span>
+<span class="s0">``````</span>
+
+<span class="s0">``FTPFile`` objects are returned by a call to ``FTPHost.open``;</span>
+<span class="s0">never use the ``FTPFile`` constructor directly.</span>
+
+<span class="s0">The APIs for remote file-like objects is modeled after the APIs of</span>
+<span class="s0">the built-in ``open`` function and its return value.</span>
+
+<span class="s0">- ``FTPHost.open(path, mode=&quot;r&quot;, buffering=None, encoding=None,</span>
+  <span class="s0">errors=None, newline=None, rest=None)``</span>
+
+  <span class="s0">returns a file-like object that refers to the path on the remote</span>
+  <span class="s0">host. This path may be absolute or relative to the current directory</span>
+  <span class="s0">on the remote host (this directory can be determined with the</span>
+  <span class="s0">``getcwd`` method). As with local file objects, the default mode is</span>
+  <span class="s0">&quot;r&quot;, i. e. reading text files. Valid modes are &quot;r&quot;, &quot;rb&quot;, &quot;w&quot;, and</span>
+  <span class="s0">&quot;wb&quot;.</span>
+
+  <span class="s0">If a file is opened in binary mode, you *must not* specify an</span>
+  <span class="s0">encoding. On the other hand, if you open a file in text mode, an</span>
+  <span class="s0">encoding is used. By default, this is the return value of</span>
+  <span class="s0">``locale.getpreferredencoding``, but you can (and probably should)</span>
+  <span class="s0">specify a distinct encoding.</span>
+
+  <span class="s0">If you open a file in binary mode, the read and write operations use</span>
+  <span class="s0">``bytes`` objects. That is, read operations return ``bytes`` and</span>
+  <span class="s0">write operations only accept ``bytes``.</span>
+
+  <span class="s0">Similarly, text files always work with strings (``str``). Here, read</span>
+  <span class="s0">operations return string and write operations only accept strings.</span>
+
+  <span class="s0">The arguments ``buffering``, ``errors`` and ``newline`` have the</span>
+  <span class="s0">same semantics as in open_.</span>
+
+  <span class="s0">If the file is opened in binary mode, you may pass 0 or a positive</span>
+  <span class="s0">integer for the ``rest`` argument. The argument is passed to the</span>
+  <span class="s0">underlying FTP session instance (for example an instance of</span>
+  <span class="s0">``ftplib.FTP``) to start reading or writing at the given byte</span>
+  <span class="s0">offset. For example, if a remote file contains the letters</span>
+  <span class="s0">&quot;abcdef&quot; in ASCII encoding, ``rest=3`` will start reading at &quot;d&quot;.</span>
+
+  <span class="s0">.. warning::</span>
+
+     <span class="s0">If you pass ``rest`` values which point *after* the file, the</span>
+     <span class="s0">behavior is undefined and may even differ from one FTP server to</span>
+     <span class="s0">another. Therefore, use the ``rest`` argument only for error</span>
+     <span class="s0">recovery in case of interrupted transfers. You need to keep track</span>
+     <span class="s0">of the transferred data so that you can provide a valid ``rest``</span>
+     <span class="s0">argument for a resumed transfer.</span>
+
+<span class="s0">.. _`open`: https://docs.python.org/3/library/functions.html#open</span>
+
+<span class="s0">``FTPHost.open`` can also be used in a ``with`` statement::</span>
+
+    <span class="s0">import ftputil</span>
+
+    <span class="s0">with ftputil.FTPHost(...) as ftp_host:</span>
+        <span class="s0">...</span>
+        <span class="s0">with ftp_host.open(&quot;new_file&quot;, &quot;w&quot;, encoding=&quot;utf8&quot;) as fobj:</span>
+            <span class="s0">fobj.write(&quot;This is some text.&quot;)</span>
+
+<span class="s0">At the end of the ``with`` block, the remote file will be closed</span>
+<span class="s0">automatically.</span>
+
+<span class="s0">If something goes wrong during the construction of the file or in the</span>
+<span class="s0">body of the ``with`` statement, the file will be closed as well.</span>
+<span class="s0">Exceptions will be propagated as with ``try ... finally``.</span>
+
+<span class="s0">Attributes and methods</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">The methods</span>
+
+<span class="s0">::</span>
+
+    <span class="s0">close()</span>
+    <span class="s0">read([count])</span>
+    <span class="s0">readline([count])</span>
+    <span class="s0">readlines()</span>
+    <span class="s0">write(data)</span>
+    <span class="s0">writelines(string_sequence)</span>
+
+<span class="s0">and the attribute ``closed`` have the same semantics as for file</span>
+<span class="s0">objects of a local disk file system. The iterator protocol is</span>
+<span class="s0">supported as well, i. e. you can use a loop to read a file line by</span>
+<span class="s0">line::</span>
+
+    <span class="s0">with ftputil.FTPHost(server, user, password) as ftp_host:</span>
+        <span class="s0">with ftp_host.open(&quot;some_file&quot;) as input_file:</span>
+            <span class="s0">for line in input_file:</span>
+                <span class="s0"># Do something with the line, e. g.</span>
+                <span class="s0">print(line.strip().replace(&quot;ftplib&quot;, &quot;ftputil&quot;))</span>
+
+<span class="s0">For more on file objects, see the section `File objects`_ in the</span>
+<span class="s0">Python Library Reference.</span>
+
+<span class="s0">.. _`file objects`: https://docs.python.org/3/glossary.html#term-file-object</span>
+
+
+<span class="s0">.. _`child_connections`:</span>
+
+<span class="s0">``FTPHost`` instances vs. FTP connections</span>
+<span class="s0">-----------------------------------------</span>
+
+<span class="s0">This section explains why keeping an ``FTPHost`` instance &quot;alive&quot;</span>
+<span class="s0">without timing out sometimes isn't trivial. If you always finish your</span>
+<span class="s0">FTP operations in time, you don't need to read this section.</span>
+
+<span class="s0">The file transfer protocol is a stateful protocol. That means an FTP</span>
+<span class="s0">connection always is in a certain state. Each of these states can only</span>
+<span class="s0">change to certain other states under certain conditions triggered by</span>
+<span class="s0">the client or the server.</span>
+
+<span class="s0">One of the consequences is that a single FTP connection can't be used</span>
+<span class="s0">at the same time, say, to transfer data on the FTP data channel and to</span>
+<span class="s0">create a directory on the remote host.</span>
+
+<span class="s0">For example, consider this::</span>
+
+    <span class="s0">&gt;&gt;&gt; import ftplib</span>
+    <span class="s0">&gt;&gt;&gt; ftp = ftplib.FTP(server, user, password)</span>
+    <span class="s0">&gt;&gt;&gt; ftp.pwd()</span>
+    <span class="s0">'/'</span>
+    <span class="s0">&gt;&gt;&gt; # Start transfer. `CONTENTS` is a text file on the server.</span>
+    <span class="s0">&gt;&gt;&gt; socket = ftp.transfercmd(&quot;RETR CONTENTS&quot;)</span>
+    <span class="s0">&gt;&gt;&gt; socket</span>
+    <span class="s0">&lt;socket._socketobject object at 0x7f801a6386e0&gt;</span>
+    <span class="s0">&gt;&gt;&gt; ftp.pwd()</span>
+    <span class="s0">Traceback (most recent call last):</span>
+      <span class="s0">File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span>
+      <span class="s0">File &quot;/usr/lib64/python2.7/ftplib.py&quot;, line 578, in pwd</span>
+        <span class="s0">return parse257(resp)</span>
+      <span class="s0">File &quot;/usr/lib64/python2.7/ftplib.py&quot;, line 842, in parse257</span>
+        <span class="s0">raise error_reply, resp</span>
+    <span class="s0">ftplib.error_reply: 226-File successfully transferred</span>
+    <span class="s0">226 0.000 seconds (measured here), 5.60 Mbytes per second</span>
+    <span class="s0">&gt;&gt;&gt;</span>
+
+<span class="s0">Note that ``ftp`` is a single FTP connection, represented by an</span>
+<span class="s0">``ftplib.FTP`` instance, not an ``ftputil.FTPHost`` instance.</span>
+
+<span class="s0">On the other hand, consider this::</span>
+
+    <span class="s0">&gt;&gt;&gt; import ftputil</span>
+    <span class="s0">&gt;&gt;&gt; ftp_host = ftputil.FTPHost(server, user, password)</span>
+    <span class="s0">&gt;&gt;&gt; ftp_host.getcwd()</span>
+    <span class="s0">&gt;&gt;&gt; fobj = ftp_host.open(&quot;CONTENTS&quot;)</span>
+    <span class="s0">&gt;&gt;&gt; fobj</span>
+    <span class="s0">&lt;ftputil.file.FTPFile object at 0x7f8019d3aa50&gt;</span>
+    <span class="s0">&gt;&gt;&gt; ftp_host.getcwd()</span>
+    <span class="s0">u'/'</span>
+    <span class="s0">&gt;&gt;&gt; fobj.readline()</span>
+    <span class="s0">u'Contents of FTP test directory\n'</span>
+    <span class="s0">&gt;&gt;&gt; fobj.close()</span>
+    <span class="s0">&gt;&gt;&gt;</span>
+
+<span class="s0">To be able to start a file transfer (i. e. open a remote file for</span>
+<span class="s0">reading or writing) and still be able to use other FTP commands,</span>
+<span class="s0">ftputil uses a trick. For every remote file, ftputil creates a new FTP</span>
+<span class="s0">connection, called a child connection in the ftputil source code.</span>
+<span class="s0">(Actually, FTP connections belonging to closed remote files are</span>
+<span class="s0">re-used if they haven't timed out yet.)</span>
+
+<span class="s0">In most cases this approach isn't noticeable by code using ftputil.</span>
+<span class="s0">However, the nice abstraction of dealing with a single FTP connection</span>
+<span class="s0">falls apart if one of the child connections times out. For example, if</span>
+<span class="s0">you open a remote file and work only with the initial &quot;main&quot;</span>
+<span class="s0">connection to navigate the file system, the FTP connection for the</span>
+<span class="s0">remote file may eventually time out.</span>
+
+<span class="s0">While it's often relatively easy to prevent the &quot;main&quot; connection from</span>
+<span class="s0">timing out it's unfortunately practically impossible to do this for a</span>
+<span class="s0">remote file connection (apart from transferring some data, of course).</span>
+<span class="s0">For this reason, `FTPHost.keep_alive`_ affects only the main</span>
+<span class="s0">connection. Child connections may still time out if they're idle for</span>
+<span class="s0">too long.</span>
+
+<span class="s0">.. _`FTPHost.keep_alive`: `keep_alive`_</span>
+
+<span class="s0">Some more details:</span>
+
+<span class="s0">- A kind of &quot;straightforward&quot; way of keeping the main connection alive</span>
+  <span class="s0">would be to call ``ftp_host.getcwd()``. However, this doesn't work</span>
+  <span class="s0">because ftputil caches the current directory and returns it without</span>
+  <span class="s0">actually contacting the server. That's the main reason why there's</span>
+  <span class="s0">a ``keep_alive`` method since it calls ``pwd`` on the FTP connection</span>
+  <span class="s0">(i. e. the session object), which isn't a public attribute.</span>
+
+<span class="s0">- Some servers define not only an idle timeout but also a transfer</span>
+  <span class="s0">timeout. This means the connection times out unless there's some</span>
+  <span class="s0">transfer on the data channel for this connection. So ftputil's</span>
+  <span class="s0">``keep_alive`` doesn't prevent this timeout, but an</span>
+  <span class="s0">``ftp_host.listdir(ftp_host.curdir)`` call should do it. However,</span>
+  <span class="s0">this transfers the data for the whole directory listing which might</span>
+  <span class="s0">take some time if the directory has many entries.</span>
+
+<span class="s0">Bottom line: If you can, you should organize your FTP actions so that</span>
+<span class="s0">you finish everything before a timeout happens.</span>
+
+
+<span class="s0">Writing directory parsers</span>
+<span class="s0">-------------------------</span>
+
+<span class="s0">``ftputil`` recognizes the two most widely-used FTP directory formats,</span>
+<span class="s0">Unix and MS style, and adjusts itself automatically. Almost every FTP</span>
+<span class="s0">server uses one of these formats.</span>
+
+<span class="s0">However, if your server uses a format which is different from the two</span>
+<span class="s0">provided by ``ftputil``, you can plug in a custom parser with a single</span>
+<span class="s0">method call and have ``ftputil`` use this parser.</span>
+
+<span class="s0">For this, you need to write a parser class by inheriting from the</span>
+<span class="s0">class ``Parser`` in the ``ftputil.stat`` module. Here's an example::</span>
+
+    <span class="s0">import ftputil.error</span>
+    <span class="s0">import ftputil.stat</span>
+
+    <span class="s0">class XyzParser(ftputil.stat.Parser):</span>
+        <span class="s0">&quot;&quot;&quot;</span>
+        <span class="s0">Parse the default format of the FTP server of the XYZ</span>
+        <span class="s0">corporation.</span>
+        <span class="s0">&quot;&quot;&quot;</span>
+
+        <span class="s0">def parse_line(self, line, time_shift=0.0):</span>
+            <span class="s0">&quot;&quot;&quot;</span>
+            <span class="s0">Parse a `line` from the directory listing and return a</span>
+            <span class="s0">corresponding `StatResult` object. If the line can't</span>
+            <span class="s0">be parsed, raise `ftputil.error.ParserError`.</span>
+
+            <span class="s0">The `time_shift` argument can be used to fine-tune the</span>
+            <span class="s0">parsing of dates and times. See the class</span>
+            <span class="s0">`ftputil.stat.UnixParser` for an example.</span>
+            <span class="s0">&quot;&quot;&quot;</span>
+            <span class="s0"># Split the `line` argument and examine it further; if</span>
+            <span class="s0"># something goes wrong, raise an `ftputil.error.ParserError`.</span>
+            <span class="s0">...</span>
+            <span class="s0"># Make a `StatResult` object from the parts above.</span>
+            <span class="s0">stat_result = ftputil.stat.StatResult(...)</span>
+            <span class="s0"># `_st_name`, `_st_target` and `_st_mtime_precision` are optional.</span>
+            <span class="s0">stat_result._st_name = ...</span>
+            <span class="s0">stat_result._st_target = ...</span>
+            <span class="s0">stat_result._st_mtime_precision = ...</span>
+            <span class="s0">return stat_result</span>
+
+        <span class="s0"># Define `ignores_line` only if the default in the base class</span>
+        <span class="s0"># doesn't do enough!</span>
+        <span class="s0">def ignores_line(self, line):</span>
+            <span class="s0">&quot;&quot;&quot;</span>
+            <span class="s0">Return a true value if the line should be ignored. For</span>
+            <span class="s0">example, the implementation in the base class handles</span>
+            <span class="s0">lines like &quot;total 17&quot;. On the other hand, if the line</span>
+            <span class="s0">should be used for stat'ing, return a false value.</span>
+            <span class="s0">&quot;&quot;&quot;</span>
+            <span class="s0">is_total_line = super().ignores_line(line)</span>
+            <span class="s0">my_test = ...</span>
+            <span class="s0">return is_total_line or my_test</span>
+
+<span class="s0">A ``StatResult`` object is similar to the value returned by</span>
+<span class="s0">`os.stat`_ and is usually built with statements like</span>
+
+<span class="s0">::</span>
+
+    <span class="s0">stat_result = StatResult(</span>
+                    <span class="s0">(st_mode, st_ino, st_dev, st_nlink, st_uid,</span>
+                     <span class="s0">st_gid, st_size, st_atime, st_mtime, st_ctime))</span>
+    <span class="s0">stat_result._st_name = ...</span>
+    <span class="s0">stat_result._st_target = ...</span>
+    <span class="s0">stat_result._st_mtime_precision = ...</span>
+
+<span class="s0">with the arguments of the ``StatResult`` constructor described in</span>
+<span class="s0">the following table.</span>
+
+<span class="s0">===== =================== ============ =================== =======================</span>
+<span class="s0">Index Attribute           os.stat type ``StatResult`` type Notes</span>
+<span class="s0">===== =================== ============ =================== =======================</span>
+<span class="s0">0     st_mode             int          int</span>
+<span class="s0">1     st_ino              long         long</span>
+<span class="s0">2     st_dev              long         long</span>
+<span class="s0">3     st_nlink            int          int</span>
+<span class="s0">4     st_uid              int          str                 usually only available as string</span>
+<span class="s0">5     st_gid              int          str                 usually only available as string</span>
+<span class="s0">6     st_size             long         long</span>
+<span class="s0">7     st_atime            int/float    float</span>
+<span class="s0">8     st_mtime            int/float    float</span>
+<span class="s0">9     st_ctime            int/float    float</span>
+<span class="s0">\-    _st_name            \-           str                 file name without directory part</span>
+<span class="s0">\-    _st_target          \-           str                 link target (may be absolute or relative)</span>
+<span class="s0">\-    _st_mtime_precision \-           int                 ``st_mtime`` precision in seconds</span>
+<span class="s0">===== =================== ============ =================== =======================</span>
+
+<span class="s0">If you can't extract all the desirable data from a line (for</span>
+<span class="s0">example, the MS format doesn't contain any information about the</span>
+<span class="s0">owner of a file), set the corresponding values in the ``StatResult``</span>
+<span class="s0">instance to ``None``.</span>
+
+<span class="s0">Parser classes can use several helper methods which are defined in</span>
+<span class="s0">the class ``Parser``:</span>
+
+<span class="s0">- ``parse_unix_mode`` parses strings like &quot;drwxr-xr-x&quot; and returns</span>
+  <span class="s0">an appropriate ``st_mode`` integer value.</span>
+
+<span class="s0">- ``parse_unix_time`` returns a float number usable for the</span>
+  <span class="s0">``st_...time`` values by parsing arguments like &quot;Nov&quot;/&quot;23&quot;/&quot;02:33&quot; or</span>
+  <span class="s0">&quot;May&quot;/&quot;26&quot;/&quot;2005&quot;. Note that the method expects the timestamp string</span>
+  <span class="s0">already split at whitespace.</span>
+
+<span class="s0">- ``parse_ms_time`` parses arguments like &quot;10-23-01&quot;/&quot;03:25PM&quot; and</span>
+  <span class="s0">returns a float number like from ``time.mktime``. Note that the</span>
+  <span class="s0">method expects the timestamp string already split at whitespace.</span>
+
+<span class="s0">Additionally, there's an attribute ``_month_numbers`` which maps</span>
+<span class="s0">lowercase three-letter month abbreviations to integers.</span>
+
+<span class="s0">For more details, see the two &quot;standard&quot; parsers ``UnixParser`` and</span>
+<span class="s0">``MSParser`` in the module ``ftputil/stat.py``.</span>
+
+<span class="s0">To actually *use* the parser, call the method `set_parser`_ of the</span>
+<span class="s0">``FTPHost`` instance.</span>
+
+<span class="s0">If you can't write a parser or don't want to, please ask on the</span>
+<span class="s0">`ftputil mailing list`_. Possibly someone has already written a parser</span>
+<span class="s0">for your server or can help with it.</span>
+
+
+<span class="s0">FAQ / Tips and tricks</span>
+<span class="s0">---------------------</span>
+
+<span class="s0">Where can I get the latest version?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">See the `download page`_. Announcements will be sent to the `mailing</span>
+<span class="s0">list`_. Announcements on major updates will also be posted to the</span>
+<span class="s0">`Python announcements list`_.</span>
+
+<span class="s0">.. _`download page`: https://ftputil.sschwarzer.net/download</span>
+<span class="s0">.. _`mailing list`: https://ftputil.sschwarzer.net/mailinglist</span>
+<span class="s0">.. _`Python announcements list`: https://mail.python.org/mailman3/lists/python-announce-list.python.org/</span>
+
+<span class="s0">Is there a mailing list on ``ftputil``?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">Yes, please visit https://ftputil.sschwarzer.net/mailinglist to</span>
+<span class="s0">subscribe or read the archives.</span>
+
+<span class="s0">Though you can *technically* post without subscribing first I can't</span>
+<span class="s0">recommend it: The mails from non-subscribers have to be approved by</span>
+<span class="s0">me and because the arriving mails contain *lots* of spam, I rarely go</span>
+<span class="s0">through these mails.</span>
+
+<span class="s0">I found a bug! What now?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">Before reporting a bug, make sure that you already read this manual</span>
+<span class="s0">and tried the `latest version`_ of ``ftputil``. There the bug might</span>
+<span class="s0">have already been fixed.</span>
+
+<span class="s0">.. _`latest version`: https://ftputil.sschwarzer.net/download</span>
+
+<span class="s0">Please see https://ftputil.sschwarzer.net/issuetrackernotes for</span>
+<span class="s0">guidelines on entering a bug in ``ftputil``'s ticket system. If you</span>
+<span class="s0">are unsure if the behaviour you found is a bug or not, you should write</span>
+<span class="s0">to the `ftputil mailing list`_. *Never* include confidential information</span>
+<span class="s0">(user id, password, file names, etc.) in the problem report! Be</span>
+<span class="s0">careful!</span>
+
+<span class="s0">Does ``ftputil`` support TLS?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">``ftputil`` has no *built-in* TLS support.</span>
+
+<span class="s0">On the other hand, there are two ways to get TLS support with</span>
+<span class="s0">ftputil:</span>
+
+<span class="s0">- The ``ftplib`` library has a class ``FTP_TLS`` that you can use for</span>
+  <span class="s0">the ``session_factory`` keyword argument in the ``FTPHost``</span>
+  <span class="s0">constructor. You can't use the class directly though *if* you need</span>
+  <span class="s0">additional setup code in comparison to ``ftplib.FTP``, for example</span>
+  <span class="s0">calling ``prot_p``, to secure the data connection. On the other</span>
+  <span class="s0">hand, `ftputil.session.session_factory`_ can be used to create a</span>
+  <span class="s0">custom session factory.</span>
+
+<span class="s0">- If you have other requirements that ``session_factory`` can't</span>
+  <span class="s0">fulfill, you may create your own session factory by inheriting from</span>
+  <span class="s0">``ftplib.FTP_TLS``::</span>
+
+    <span class="s0">import ftplib</span>
+
+    <span class="s0">import ftputil</span>
+
+
+    <span class="s0">class FTPTLSSession(ftplib.FTP_TLS):</span>
+
+        <span class="s0">def __init__(self, host, user, password):</span>
+            <span class="s0">ftplib.FTP_TLS.__init__(self)</span>
+            <span class="s0">self.connect(host, port)</span>
+            <span class="s0">self.login(user, password)</span>
+            <span class="s0"># Set up encrypted data connection.</span>
+            <span class="s0">self.prot_p()</span>
+            <span class="s0">...</span>
+
+    <span class="s0"># Note the `session_factory` parameter. Pass the class, not</span>
+    <span class="s0"># an instance.</span>
+    <span class="s0">with ftputil.FTPHost(server, user, password,</span>
+                         <span class="s0">session_factory=FTPTLSSession) as ftp_host:</span>
+        <span class="s0"># Use `ftp_host` as usual.</span>
+        <span class="s0">...</span>
+
+<span class="s0">.. _`ftputil.session.session_factory`: `Session factories`_</span>
+
+
+<span class="s0">How do I connect to a non-default port?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">By default, an instantiated ``FTPHost`` object connects on the usual</span>
+<span class="s0">FTP port. If you have to use a different port, refer to the section</span>
+<span class="s0">`Session factories`_.</span>
+
+<span class="s0">How do I set active or passive mode?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">Please see the section `Session factories`_.</span>
+
+<span class="s0">How can I debug an FTP connection problem?</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">You can do this with a session factory. See `Session factories`_.</span>
+
+<span class="s0">If you want to change the debug level only temporarily after the</span>
+<span class="s0">connection is established, you can reach the `session object`_ as the</span>
+<span class="s0">``_session`` attribute of the ``FTPHost`` instance and call</span>
+<span class="s0">``_session.set_debuglevel``. Note that the ``_session`` attribute</span>
+<span class="s0">should *only* be accessed for debugging. Calling arbitrary</span>
+<span class="s0">``ftplib.FTP`` methods on the session object may *cause* bugs!</span>
+
+<span class="s0">.. _`session object`: `Session factories`_</span>
+
+<span class="s0">Conditional upload/download to/from a server in a different time zone</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">You may find that ``ftputil`` uploads or downloads files</span>
+<span class="s0">unnecessarily, or not when it should. Please see the section on `time</span>
+<span class="s0">zone correction`_. It may even be sufficient to call</span>
+<span class="s0">`synchronize_times`_.</span>
+
+<span class="s0">When I use ``ftputil``, all I get is a ``ParserError`` exception</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">The FTP server you connect to may use a directory format that</span>
+<span class="s0">``ftputil`` doesn't understand. You can either write and</span>
+<span class="s0">`plug in your own parser`_ or ask on the `mailing list`_ for</span>
+<span class="s0">help.</span>
+
+<span class="s0">.. _`plug in your own parser`: `Writing directory parsers`_</span>
+
+<span class="s0">``isdir``, ``isfile`` or ``islink`` incorrectly return ``False``</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">Like Python's counterparts under `os.path`_, ``ftputil``'s methods</span>
+<span class="s0">return ``False`` if they can't find the given path.</span>
+
+<span class="s0">Probably you used ``listdir`` on a directory and called ``is...()`` on</span>
+<span class="s0">the returned names. But if the argument for ``listdir`` wasn't the</span>
+<span class="s0">current directory, the paths won't be found and so all ``is...()``</span>
+<span class="s0">variants will return ``False``.</span>
+
+<span class="s0">I don't find an answer to my problem in this document</span>
+<span class="s0">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="s0">Please send an email with your problem report or question to the</span>
+<span class="s0">`ftputil mailing list`_, and we'll see what we can do for you. :-)</span>
+
+
+<span class="s0">Bugs and limitations</span>
+<span class="s0">--------------------</span>
+
+<span class="s0">- ``ftputil`` needs at least Python 3.6 to work.</span>
+
+<span class="s0">- Whether ``ftputil`` &quot;sees&quot; &quot;hidden&quot; directory and file names (i. e.</span>
+  <span class="s0">names starting with a dot) depends on the configuration of the FTP</span>
+  <span class="s0">server. See `Hidden files and directories`_ for details.</span>
+
+<span class="s0">- Due to the implementation of ``lstat`` it can not return a sensible</span>
+  <span class="s0">value for the root directory ``/`` though stat'ing entries *in* the</span>
+  <span class="s0">root directory isn't a problem. If you know an implementation that</span>
+  <span class="s0">can do this, please let me know. The root directory is handled</span>
+  <span class="s0">appropriately in ``FTPHost.path.exists/isfile/isdir/islink``, though.</span>
+
+<span class="s0">- In multithreaded programs, you can have each thread use one or more</span>
+  <span class="s0">``FTPHost`` instances as long as no instance is shared with other</span>
+  <span class="s0">threads.</span>
+
+<span class="s0">- Currently, it is not possible to continue an interrupted upload or</span>
+  <span class="s0">download. Contact me if this causes problems for you.</span>
+
+<span class="s0">- There's exactly one cache for ``lstat`` results for each ``FTPHost``</span>
+  <span class="s0">object, i. e. there's no sharing of cache results determined by</span>
+  <span class="s0">several ``FTPHost`` objects. See `Local caching of file system</span>
+  <span class="s0">information`_ for the reasons.</span>
+
+
+<span class="s0">Files</span>
+<span class="s0">-----</span>
+
+<span class="s0">If not overwritten via installation options, the ``ftputil`` files</span>
+<span class="s0">reside in the ``ftputil`` package. There's also documentation in</span>
+<span class="s0">`reStructuredText`_ and in HTML format. The locations of these</span>
+<span class="s0">files after installation is system-dependent.</span>
+
+<span class="s0">.. _`reStructuredText`: https://docutils.sourceforge.net/rst.html</span>
+
+<span class="s0">The files ``test_*.py`` and ``scripted_session.py`` are for</span>
+<span class="s0">unit-testing. If you only *use* ``ftputil``, i. e. *don't* modify it,</span>
+<span class="s0">you can delete these files.</span>
+
+
+<span class="s0">References</span>
+<span class="s0">----------</span>
+
+<span class="s0">- Postel J, Reynolds J. 1985. `RFC 959 - File Transfer Protocol (FTP)`_.</span>
+
+<span class="s0">- Python Software Foundation. 2020. `The Python Standard Library`_.</span>
+
+<span class="s0">.. _`RFC 959 - File Transfer Protocol (FTP)`: https://www.ietf.org/rfc/rfc959.txt</span>
+<span class="s0">.. _`The Python Standard Library`: https://docs.python.org/library/index.html</span>
+
+
+<span class="s0">Authors</span>
+<span class="s0">-------</span>
+
+<span class="s0">``ftputil`` is written by Stefan Schwarzer</span>
+<span class="s0">&lt;sschwarzer@sschwarzer.net&gt; and contributors (see</span>
+<span class="s0">``doc/contributors.txt``).</span>
+
+<span class="s0">The original ``lrucache`` module was written by Evan Prodromou</span>
+<span class="s0">&lt;evan@prodromou.name&gt;.</span>
+
+<span class="s0">Feedback is appreciated. :-)</span>
+</pre>
+</body>
+</html>
