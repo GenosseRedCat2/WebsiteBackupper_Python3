@@ -2,7 +2,6 @@ import ftplib
 import os
 from datetime import date
 
-
 #Datum hinzufügen
 #schauen ob die modify timestamp geändert hat
 def downloaddir():
@@ -39,12 +38,12 @@ print("Success: %s:%s" % (username, password));
 
 today = date.today()
 d1 = today.strftime("%d-%b-%Y")
-
+name_von_backup = "Backup_Webseite_" + d1
 #Falls der Ordner mit dem aktuellen Datum nicht existiert, erstellt es einen Ordner mit aktuellem
 #Datum
-if not os.path.exists("Backup_Webseite_" + d1):
-    os.makedirs("Backup_Webseite_" + d1)
-os.chdir("Backup_Webseite_" + d1)
+if not os.path.exists(name_von_backup):
+    os.makedirs(name_von_backup)
+os.chdir(name_von_backup)
 
 
 files = []

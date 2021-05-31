@@ -1,11 +1,15 @@
+
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from ftp_connector import name_von_backup
 
 datum = "May-05-21"
 
 #Errorlog muss noch gemacht werden
+
+#Name von der Webseite sollte auch noch ins Mail
 
 
 #Informationen werden in das Mail eingefügt
@@ -28,3 +32,5 @@ smtp_connection.sendmail('websitebackupper@gmx.ch','jasonbanyer@gmail.com',msg.a
 
 #Verbindung wird geschlossen
 smtp_connection.quit()
+#print(name_von_backup)
+print("adsjkjask")
