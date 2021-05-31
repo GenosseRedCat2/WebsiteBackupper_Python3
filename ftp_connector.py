@@ -55,3 +55,6 @@ ftp_conn.cwd('SCHOOL_JASON/PS/GridCSS')
 downloaddir()
 # Close the Connection
 ftp_conn.quit()
+
+#SMTP wird gestartet oder im Main?
+#
