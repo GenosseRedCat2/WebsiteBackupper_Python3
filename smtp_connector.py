@@ -1,8 +1,6 @@
-
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
 from ftp_connector import name_von_backup
 
 datum = "May-05-21"
@@ -32,5 +30,5 @@ smtp_connection.sendmail('websitebackupper@gmx.ch','jasonbanyer@gmail.com',msg.a
 
 #Verbindung wird geschlossen
 smtp_connection.quit()
-#print(name_von_backup)
-print("adsjkjask")
+print(name_von_backup)
+print("adsjkjask 2")
