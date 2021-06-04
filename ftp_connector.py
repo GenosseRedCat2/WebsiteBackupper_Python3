@@ -1,9 +1,10 @@
 import ftplib
 import os
+import pathlib
 from datetime import date
 
-#Datum hinzufügen
-#schauen ob die modify timestamp geändert hat
+#Function, which goes through each dir on the server and downloads all files
+#Then saves them to a folder, with the same name it has on the server
 def downloaddir():
     files = ftp_conn.mlsd("")
 
@@ -21,15 +22,47 @@ def downloaddir():
             with open(file[0],"wb") as file_2:
                 ftp_conn.retrbinary('RETR ' + file[0], file_2.write)
 
+#universal main path
+bindir = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
-username = 'schule_www91';
-password = 'SchulePASSWORTFUERFTP2222';
 
-ftp_conn = ftplib.FTP('tangoclub.ch');
-#ftp_conn = ftputil.FTP('tangoclub.ch')
-print('using %s : %s' % (username, password));
-ftp_conn.login(username, password);
-print("Success: %s:%s" % (username, password));
+#Checks if the CONFIGURATION folder exists
+if not os.path.exists("CONFIGURATION"):
+    print("PLEASE CONFIGURE FTP AND SMTP FIRST")
+    exit()
+os.chdir("CONFIGURATION")
+
+try:
+    FTP_user_file = open("FTP_user.txt", "r")
+    FTP_pass_file = open("FTP_pass.txt", "r")
+    FTP_server_file = open("FTP_server.txt", "r")
+
+    FTP_server = FTP_server_file.read()
+    FTP_user = FTP_user_file.read()
+    FTP_pass = FTP_pass_file.read()
+
+    #Closes all the files
+    FTP_user_file.close()
+    FTP_pass_file.close()
+    FTP_server_file.close()
+
+
+    #If nothing has been configured yet, i.e the files don't exist,
+    # the Exception is made and the script is finished.
+except FileNotFoundError:
+    print("PLEASE CONFIGURE FTP FIRST")
+    exit()
+
+#Change to main directory
+os.chdir(bindir)
+
+username = FTP_user
+password = FTP_pass
+
+ftp_conn = ftplib.FTP(FTP_server)
+print('using %s : %s' % (username, password))
+ftp_conn.login(username, password)
+print("Success: %s:%s" % (username, password))
 
 
 
@@ -38,22 +71,29 @@ print("Success: %s:%s" % (username, password));
 
 today = date.today()
 d1 = today.strftime("%d-%b-%Y")
-name_von_backup = "Backup_Webseite_" + d1
-#Falls der Ordner mit dem aktuellen Datum nicht existiert, erstellt es einen Ordner mit aktuellem
-#Datum
+name_von_backup = "Backup_Homepage_" + d1
+
+#Incase the folder doesn't exist,
+# one is automatically created with the name "Backup_Homepage" and the current date.
 if not os.path.exists(name_von_backup):
     os.makedirs(name_von_backup)
 os.chdir(name_von_backup)
 
 
 files = []
-ftp_conn.cwd('SCHOOL_JASON/PS/GridCSS')
+#On the server a specific directory is selected. This is only for test.
+#By default this would be empty
+#ftp_conn.cwd('SCHOOL_JASON/PS/GridCSS')
 
 
-
+#The Download function is executed
 downloaddir()
 # Close the Connection
 ftp_conn.quit()
+#The FTP connection is closed.
 
-#SMTP wird gestartet oder im Main?
-#
+#Change to main directory
+os.chdir(bindir)
+
+#Compress Backupfolder and delete it
+import zipper
