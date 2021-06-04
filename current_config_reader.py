@@ -2,6 +2,8 @@ import os
 
 # Creates the CONFIGURATION folder, if it doesn't exist yet.
 # Then selects it.
+from logger import logger
+
 if not os.path.exists("CONFIGURATION"):
     os.makedirs("CONFIGURATION")
 os.chdir("CONFIGURATION")
@@ -39,7 +41,8 @@ try:
     #If nothing has been configured yet, i.e the files don't exist,
     # the Exception is made and the script is finished.
 except FileNotFoundError:
-    print("PLEASE CONFIGURE FTP AND SMTP FIRST")
+    print("(4) PLEASE CONFIGURE FTP AND SMTP FIRST")
+    logger.error("(4) PLEASE CONFIGURE FTP AND SMTP FIRST")
     exit()
 
 print("[CURRENT FTP USERNAME: " + FTP_user + "]")

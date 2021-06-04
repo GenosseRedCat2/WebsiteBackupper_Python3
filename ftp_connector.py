@@ -2,7 +2,7 @@ import ftplib
 import os
 import pathlib
 from datetime import date
-
+from logger import logger
 #Function, which goes through each dir on the server and downloads all files
 #Then saves them to a folder, with the same name it has on the server
 def downloaddir():
@@ -28,7 +28,8 @@ bindir = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
 #Checks if the CONFIGURATION folder exists
 if not os.path.exists("CONFIGURATION"):
-    print("PLEASE CONFIGURE FTP AND SMTP FIRST")
+    print("(1) PLEASE CONFIGURE FTP AND SMTP FIRST")
+    logger.error("(1) PLEASE CONFIGURE FTP AND SMTP FIRST")
     exit()
 os.chdir("CONFIGURATION")
 
@@ -50,7 +51,8 @@ try:
     #If nothing has been configured yet, i.e the files don't exist,
     # the Exception is made and the script is finished.
 except FileNotFoundError:
-    print("PLEASE CONFIGURE FTP FIRST")
+    logger.error("(2) PLEASE CONFIGURE FTP FIRST")
+    print("(2) PLEASE CONFIGURE FTP FIRST")
     exit()
 
 #Change to main directory

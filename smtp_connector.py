@@ -3,12 +3,13 @@ import smtplib
 from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from logger import logger
+
 from ftp_connector import name_von_backup
 
-
-
 if not os.path.exists("CONFIGURATION"):
-    print("PLEASE CONFIGURE FTP AND SMTP FIRST")
+    logger.error("(3) PLEASE CONFIGURE FTP AND SMTP FIRST")
+    print("(3) PLEASE CONFIGURE FTP AND SMTP FIRST")
     exit()
 os.chdir("CONFIGURATION")
 
@@ -35,7 +36,8 @@ try:
     #If nothing has been configured yet, i.e the files don't exist,
     # the Exception is made and the script is finished.
 except FileNotFoundError:
-    print("PLEASE CONFIGURE SMTP FIRST")
+    logger.error("(5) PLEASE CONFIGURE SMTP FIRST")
+    print("(5) PLEASE CONFIGURE SMTP FIRST")
     exit()
 
 
