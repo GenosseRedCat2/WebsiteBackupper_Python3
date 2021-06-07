@@ -27,6 +27,7 @@ bindir = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
 
 #Checks if the CONFIGURATION folder exists
+#And the logger writes into the log file.
 if not os.path.exists("CONFIGURATION"):
     print("(1) PLEASE CONFIGURE FTP AND SMTP FIRST")
     logger.error("(1) PLEASE CONFIGURE FTP AND SMTP FIRST")
@@ -50,6 +51,7 @@ try:
 
     #If nothing has been configured yet, i.e the files don't exist,
     # the Exception is made and the script is finished.
+    # And the logger writes into the log file.
 except FileNotFoundError:
     logger.error("(2) PLEASE CONFIGURE FTP FIRST")
     print("(2) PLEASE CONFIGURE FTP FIRST")

@@ -7,12 +7,16 @@ from logger import logger
 
 from ftp_connector import name_von_backup
 
+#Check if the folder "CONFIGURATION" exists. If it doesn't end the program.
 if not os.path.exists("CONFIGURATION"):
     logger.error("(3) PLEASE CONFIGURE FTP AND SMTP FIRST")
     print("(3) PLEASE CONFIGURE FTP AND SMTP FIRST")
     exit()
 os.chdir("CONFIGURATION")
 
+#Read out all the information, which is required to establish the SMTP connection
+#If it doesn't work, end the program.
+#And the logger writes into the log file.
 try:
     email_sender_file = open("email_sender.txt", "r")
     email_password_file = open("email_password.txt", "r")
@@ -46,12 +50,8 @@ except FileNotFoundError:
 today = date.today()
 date_in_DBY = today.strftime("%d-%b-%Y")
 
-#Errorlog muss noch gemacht werden
 
-#Name von der Webseite sollte auch noch ins Mail
-
-
-#Informationen werden in das Mail eingefügt
+#Information is added into the E-Mail
 msg = MIMEMultipart()
 msg['From'] = email_sender
 msg['To'] = email_receiver
@@ -59,16 +59,16 @@ msg['Subject'] = "Backup von: " + date_in_DBY
 message = 'Das Backup wurde am: ' + date_in_DBY + " erfolgreich gemacht."
 msg.attach(MIMEText(message))
 
-#Verbindung zu GMX erstellt
+#Connection to the GMX is established
 smtp_connection = smtplib.SMTP(email_serveraddress, email_serverport)
 smtp_connection.ehlo()
 smtp_connection.starttls()
 smtp_connection.ehlo()
 smtp_connection.login(email_sender, email_password)
 
-#Email wird versendet
+#E-Mail is sent
 smtp_connection.sendmail(email_sender, email_receiver, msg.as_string())
 
-#Verbindung wird geschlossen
+#Connection is ended.
 smtp_connection.quit()
 print("BACKUP COMPLETE!")

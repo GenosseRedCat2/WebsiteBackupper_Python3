@@ -8,6 +8,7 @@ if not os.path.exists("CONFIGURATION"):
     os.makedirs("CONFIGURATION")
 os.chdir("CONFIGURATION")
 
+#Check if the files exist for the connections.
 try:
     email_sender_file = open("email_sender.txt", "r")
     email_password_file = open("email_password.txt", "r")
@@ -40,6 +41,7 @@ try:
 
     #If nothing has been configured yet, i.e the files don't exist,
     # the Exception is made and the script is finished.
+    # And the logger writes into the log file.
 except FileNotFoundError:
     print("(4) PLEASE CONFIGURE FTP AND SMTP FIRST")
     logger.error("(4) PLEASE CONFIGURE FTP AND SMTP FIRST")

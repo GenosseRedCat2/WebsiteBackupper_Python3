@@ -5,7 +5,7 @@ import time
 
 
 
-#Optione azeige (Menü)
+#Menu options
 time.sleep(0.5)
 print("MENU")
 time.sleep(0.5)
