@@ -32,10 +32,13 @@ if menu_choice == "1":
 
     FTP_server = input("FTP server: \n")
     print(FTP_server)
+    print("\n")
     FTP_username = input("FTP username: \n")
     print(FTP_username)
+    print("\n")
     FTP_password = input("FTP password: \n")
-    print(FTP_server)
+    print(FTP_password)
+    print("\n")
     print("\n\n FTP CONFIGURATION COMPLETE!")
 
     # Overwrite File if it already contains something
