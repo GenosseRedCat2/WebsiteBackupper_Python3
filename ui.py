@@ -1,11 +1,6 @@
 import os
 import time
-
-
-
-
-
-#Menu options
+#Here all the menu options are displayed and handeled.
 time.sleep(0.5)
 print("MENU")
 time.sleep(0.5)
@@ -57,7 +52,8 @@ if menu_choice == "1":
     FTP_server_file.close()
     FTP_user_file.close()
     FTP_pass_file.close()
-
+    enter_to_close = input("Press Enter to end \n")
+    exit()
 
 if menu_choice == "2":
     print("_______________________")

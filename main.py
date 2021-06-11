@@ -1,3 +1,5 @@
+#Main file. Executes the titlescren and the UI.
+
 import os
 import pathlib
 import time

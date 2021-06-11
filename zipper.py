@@ -1,6 +1,6 @@
 import os
 import shutil
-
+#Here the downloaded file is compressed and the original folder gets deleted.
 from ftp_connector import name_von_backup, bindir
 
 #Compress Folder

@@ -3,7 +3,10 @@ import os
 import pathlib
 from datetime import date
 from logger import logger
-#Function, which goes through each dir on the server and downloads all files
+#Here the FTP connection is established with the desired server and all files
+# are downloaded.Then the compress python file is launched
+
+#Function, which goes through each directory on the server and downloads all files
 #Then saves them to a folder, with the same name it has on the server
 def downloaddir():
     files = ftp_conn.mlsd("")
@@ -31,6 +34,7 @@ bindir = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 if not os.path.exists("CONFIGURATION"):
     print("(1) PLEASE CONFIGURE FTP AND SMTP FIRST")
     logger.error("(1) PLEASE CONFIGURE FTP AND SMTP FIRST")
+    enter_to_close = input("Press Enter to end \n")
     exit()
 os.chdir("CONFIGURATION")
 
@@ -55,6 +59,7 @@ try:
 except FileNotFoundError:
     logger.error("(2) PLEASE CONFIGURE FTP FIRST")
     print("(2) PLEASE CONFIGURE FTP FIRST")
+    enter_to_close = input("Press Enter to end \n")
     exit()
 
 #Change to main directory

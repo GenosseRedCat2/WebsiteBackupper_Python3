@@ -1,6 +1,6 @@
 import logging
 from logging import handlers
-#config logger
+#Here the Logger is configured, which will be used to write Errors in the log file.
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 log_handler = handlers.RotatingFileHandler('my_log.log', maxBytes=2000, backupCount=10)

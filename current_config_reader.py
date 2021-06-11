@@ -1,4 +1,5 @@
 import os
+#Here all current configurations are displayed.
 
 # Creates the CONFIGURATION folder, if it doesn't exist yet.
 # Then selects it.

@@ -1,5 +1,5 @@
 import time
-
+#Here the titlescreen is displayed.
 print("\n")
 print("\n")
 print("=")

@@ -4,13 +4,15 @@ from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from logger import logger
-
+#Here the E-Mail/SMTP connection is established and handeled.
+#This is also the place where the E-Mail is sent.
 from ftp_connector import name_von_backup
 
 #Check if the folder "CONFIGURATION" exists. If it doesn't end the program.
 if not os.path.exists("CONFIGURATION"):
     logger.error("(3) PLEASE CONFIGURE FTP AND SMTP FIRST")
     print("(3) PLEASE CONFIGURE FTP AND SMTP FIRST")
+    enter_to_close = input("Press Enter to end \n")
     exit()
 os.chdir("CONFIGURATION")
 
@@ -42,6 +44,7 @@ try:
 except FileNotFoundError:
     logger.error("(5) PLEASE CONFIGURE SMTP FIRST")
     print("(5) PLEASE CONFIGURE SMTP FIRST")
+    enter_to_close = input("Press Enter to end \n")
     exit()
 
 
