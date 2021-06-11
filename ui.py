@@ -106,6 +106,8 @@ if menu_choice == "2":
     SMTP_serverport.close()
     SMTP_receiver.close()
     print("\n\n EMAIL/SMTP CONFIGURATION COMPLETE!")
+    enter_to_close = input("Press Enter to end \n")
+    exit()
 
 if menu_choice == "3":
     print("__________________________")
@@ -120,3 +122,5 @@ if menu_choice == "4":
     print("________________________")
     #imports the current configuration reader.
     import current_config_reader
+    enter_to_close = input("Press Enter to end \n")
+    exit()

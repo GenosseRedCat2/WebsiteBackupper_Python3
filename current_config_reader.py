@@ -45,6 +45,7 @@ try:
 except FileNotFoundError:
     print("(4) PLEASE CONFIGURE FTP AND SMTP FIRST")
     logger.error("(4) PLEASE CONFIGURE FTP AND SMTP FIRST")
+    enter_to_close = input("Press Enter to end \n")
     exit()
 
 print("[CURRENT FTP USERNAME: " + FTP_user + "]")
