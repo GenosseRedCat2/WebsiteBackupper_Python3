@@ -8,6 +8,7 @@ from logger import logger
 
 #Function, which goes through each directory on the server and downloads all files
 #Then saves them to a folder, with the same name it has on the server
+#The function used here is recursive.
 def downloaddir():
     files = ftp_conn.mlsd("")
 
